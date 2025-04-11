@@ -38,6 +38,20 @@ const verifyToken = async (req: Request, res: Response, next: Function) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Route to check database connection
+  app.get("/api/db-status", async (req, res) => {
+    try {
+      // Check database connectivity
+      const result = await pool.query('SELECT 1 as connected');
+      return res.status(200).json({ 
+        connected: result.rows[0].connected === 1,
+        database: process.env.PGDATABASE || 'postgres'
+      });
+    } catch (error) {
+      console.error('Database connection error:', error);
+      return res.status(500).json({ connected: false, error: "Database connection failed" });
+    }
+  });
   // Chat routes - protected by authentication
   app.post("/api/chat", verifyToken, async (req, res) => {
     try {

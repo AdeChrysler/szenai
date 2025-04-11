@@ -4,7 +4,7 @@ export interface Message {
   role: 'user' | 'assistant';
   session_id: string;
   created_at: string;
-  userId?: number;
+  user_id: number;
 }
 
 export interface ChatState {

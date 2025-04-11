@@ -12,27 +12,47 @@ export const DatabaseSetup: React.FC = () => {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Check if tables exist on first load
+  // Check database status on first load
   useEffect(() => {
-    const checkTables = async () => {
+    const checkDatabase = async () => {
       if (!user) return;
       
       try {
-        const response = await apiRequest('GET', '/api/chat/history', {
-          queryParams: { sessionId: 'check-tables' }
-        });
+        // First check if database is connected
+        const dbStatusRes = await fetch('/api/db-status');
+        const dbStatusData = await dbStatusRes.json();
         
-        // If we get here, the tables exist
-        setDbStatus('ready');
-        setSetupComplete(true);
+        if (!dbStatusData.connected) {
+          toast({
+            title: 'Database Connection Issue',
+            description: 'Unable to connect to PostgreSQL database.',
+            variant: 'destructive',
+          });
+          setDbStatus('needs_setup');
+          return;
+        }
+        
+        // If connected, check if tables exist
+        try {
+          const response = await apiRequest('GET', '/api/chat/history', {
+            queryParams: { sessionId: 'check-tables' }
+          });
+          
+          // If we get here, the tables exist
+          setDbStatus('ready');
+          setSetupComplete(true);
+        } catch (error) {
+          // If there's an error, we might need to create tables
+          setDbStatus('needs_setup');
+        }
       } catch (error) {
-        // If there's an error, we might need to create tables
+        console.error('Database status check failed:', error);
         setDbStatus('needs_setup');
       }
     };
     
-    checkTables();
-  }, [user]);
+    checkDatabase();
+  }, [user, toast]);
 
   const createTables = async () => {
     if (!user) return;

@@ -95,6 +95,7 @@ const ChatPage: React.FC = () => {
       role: 'user',
       session_id: sessionId,
       created_at: new Date().toISOString(),
+      user_id: parseInt(user.id),
     };
     
     setMessages((prev) => [...prev, userMessage]);
