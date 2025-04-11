@@ -6,6 +6,7 @@ import { fromZodError } from "zod-validation-error";
 import crypto from "crypto";
 import { createClient } from '@supabase/supabase-js';
 import { storage } from './storage';
+import { pool } from './db';
 
 // Create Supabase client for server-side operations (for authentication only)
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
@@ -51,11 +52,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If user not found, create the profile
       if (!user) {
-        user = await storage.createUser({
-          id: userId,
-          email: supabaseUser.email,
-          password: '' // We don't store password as Supabase handles auth
-        });
+        // Update the database schema to handle the custom ID insertion
+        try {
+          await pool.query(
+            'INSERT INTO users (id, email, password) VALUES ($1, $2, $3) RETURNING *',
+            [userId, supabaseUser.email, '']
+          );
+          
+          // Now get the user
+          user = await storage.getUser(userId);
+          
+          if (!user) {
+            throw new Error('Failed to create user');
+          }
+        } catch (error) {
+          console.error('Error creating user:', error);
+          throw new Error('Failed to create user profile');
+        }
       }
       
       // Store user message

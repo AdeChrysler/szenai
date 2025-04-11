@@ -8,22 +8,40 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+interface ApiRequestOptions {
+  queryParams?: Record<string, string>;
+  [key: string]: any;
+}
+
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined,
+  options?: ApiRequestOptions,
 ): Promise<Response> {
   try {
     // Get the Supabase session token for authenticated requests
     const token = await getSessionToken();
     
-    const res = await fetch(url, {
+    // Handle query parameters
+    const urlObj = new URL(url, window.location.origin);
+    
+    // Add any query parameters
+    if (options?.queryParams) {
+      Object.entries(options.queryParams).forEach(([key, value]) => {
+        urlObj.searchParams.append(key, value);
+      });
+    }
+    
+    // Only include body for non-GET requests
+    const hasBody = method !== 'GET' && method !== 'HEAD' && options && 'data' in options;
+    
+    const res = await fetch(urlObj.toString(), {
       method,
       headers: {
-        ...(data ? { "Content-Type": "application/json" } : {}),
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
         "Authorization": `Bearer ${token}`
       },
-      body: data ? JSON.stringify(data) : undefined,
+      body: hasBody ? JSON.stringify(options.data) : undefined,
       credentials: "include",
     });
 
