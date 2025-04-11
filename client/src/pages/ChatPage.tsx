@@ -44,7 +44,7 @@ const ChatPage: React.FC = () => {
     isLoading: isFetchingHistory,
     error: fetchError,
   } = useQuery<{ messages: Message[] }>({
-    queryKey: ['/api/chat/history', user?.id, sessionId],
+    queryKey: ['/api/chat/history', user?.id, { sessionId }],
     enabled: !!user,
   });
 
@@ -58,9 +58,11 @@ const ChatPage: React.FC = () => {
   const { mutate: sendMessage, isPending: isSending } = useMutation({
     mutationFn: async (message: string) => {
       const response = await apiRequest('POST', '/api/chat', {
-        message,
-        sessionId,
-        userId: user?.id,
+        data: {
+          message,
+          sessionId,
+          userId: user?.id,
+        }
       });
       return response.json();
     },
@@ -72,7 +74,7 @@ const ChatPage: React.FC = () => {
         setSessionId(data.sessionId);
       }
       // Invalidate the chat history query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['/api/chat/history', user?.id, sessionId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/chat/history', user?.id, { sessionId }] });
     },
     onError: (error) => {
       toast({

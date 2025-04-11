@@ -1,10 +1,4 @@
-import pkg from 'pg';
-const { Pool } = pkg;
-
-// Create a PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+import { pool } from './db';
 
 // Initialize database tables using PostgreSQL
 export async function initializeDatabase() {
@@ -60,5 +54,4 @@ export async function initializeDatabase() {
   }
 }
 
-// Export pool for reuse
-export { pool };
+// Pool is now imported from db.ts

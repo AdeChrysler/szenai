@@ -63,7 +63,20 @@ export const getQueryFn: <T>(options: {
       // Get the Supabase session token for authenticated requests
       const token = await getSessionToken();
       
-      const res = await fetch(queryKey[0] as string, {
+      // The first element is the base URL
+      const baseUrl = queryKey[0] as string;
+      
+      // Get URL object to add query parameters
+      const url = new URL(baseUrl, window.location.origin);
+      
+      // If there are any query parameters, add them (queryKey[2] onwards might contain params)
+      if (queryKey.length > 2 && typeof queryKey[2] === 'object') {
+        Object.entries(queryKey[2] as Record<string, string>).forEach(([key, value]) => {
+          url.searchParams.append(key, value);
+        });
+      }
+      
+      const res = await fetch(url.toString(), {
         credentials: "include",
         headers: {
           "Authorization": `Bearer ${token}`

@@ -1,5 +1,5 @@
 import { users, messages, type User, type InsertUser, type Message, type InsertMessage } from "@shared/schema";
-import { pool } from './init-db';
+import { pool } from './db';
 
 export interface IStorage {
   // User methods
