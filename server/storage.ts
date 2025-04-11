@@ -1,38 +1,67 @@
-import { users, type User, type InsertUser } from "@shared/schema";
-
-// modify the interface with any CRUD methods
-// you might need
+import { users, messages, type User, type InsertUser, type Message, type InsertMessage } from "@shared/schema";
 
 export interface IStorage {
+  // User methods
   getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Message methods
+  createMessage(message: InsertMessage): Promise<Message>;
+  getMessagesBySession(userId: number, sessionId: string): Promise<Message[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  currentId: number;
+  private messages: Map<number, Message>;
+  private userIdCounter: number;
+  private messageIdCounter: number;
 
   constructor() {
     this.users = new Map();
-    this.currentId = 1;
+    this.messages = new Map();
+    this.userIdCounter = 1;
+    this.messageIdCounter = 1;
   }
 
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+      (user) => user.email === email,
     );
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
+    const id = this.userIdCounter++;
+    const now = new Date();
+    const user: User = { 
+      ...insertUser, 
+      id,
+      created_at: now
+    };
     this.users.set(id, user);
     return user;
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const id = this.messageIdCounter++;
+    const now = new Date();
+    const message: Message = {
+      ...insertMessage,
+      id,
+      created_at: now
+    };
+    this.messages.set(id, message);
+    return message;
+  }
+
+  async getMessagesBySession(userId: number, sessionId: string): Promise<Message[]> {
+    return Array.from(this.messages.values())
+      .filter(message => message.user_id === userId && message.session_id === sessionId)
+      .sort((a, b) => a.id - b.id);
   }
 }
 

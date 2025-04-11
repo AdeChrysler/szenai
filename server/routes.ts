@@ -1,96 +1,63 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { loginUserSchema, registerUserSchema, chatRequestSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import crypto from "crypto";
+import { createClient } from '@supabase/supabase-js';
+
+// Create Supabase client for server-side operations
+const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Middleware to verify Supabase JWT token
+const verifyToken = async (req: Request, res: Response, next: Function) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data, error } = await supabase.auth.getUser(token);
+    
+    if (error || !data.user) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    
+    // Add user data to request
+    req.body.supabaseUser = data.user;
+    next();
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return res.status(401).json({ message: 'Authentication failed' });
+  }
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const validatedData = registerUserSchema.parse(req.body);
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(validatedData.email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-      
-      // Hash password
-      const hashedPassword = crypto
-        .createHash("sha256")
-        .update(validatedData.password)
-        .digest("hex");
-      
-      // Create user
-      const user = await storage.createUser({
-        email: validatedData.email,
-        password: hashedPassword,
-      });
-      
-      // Don't return password in response
-      const { password, ...userWithoutPassword } = user;
-      
-      return res.status(201).json({ user: userWithoutPassword });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ 
-          message: fromZodError(error).message 
-        });
-      }
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-  
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const validatedData = loginUserSchema.parse(req.body);
-      
-      // Get user
-      const user = await storage.getUserByEmail(validatedData.email);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      
-      // Check password
-      const hashedPassword = crypto
-        .createHash("sha256")
-        .update(validatedData.password)
-        .digest("hex");
-      
-      if (user.password !== hashedPassword) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      
-      // Don't return password in response
-      const { password, ...userWithoutPassword } = user;
-      
-      return res.status(200).json({ user: userWithoutPassword });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ 
-          message: fromZodError(error).message 
-        });
-      }
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-  
-  // Chat routes
-  app.post("/api/chat", async (req, res) => {
+  // Chat routes - protected by authentication
+  app.post("/api/chat", verifyToken, async (req, res) => {
     try {
       const { message, sessionId = crypto.randomUUID() } = chatRequestSchema.parse(req.body);
-      const userId = req.body.userId; // In a real app, this would come from the session/token
+      const supabaseUser = req.body.supabaseUser;
       
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
+      // For demo purposes, we'll create a simple mapping between Supabase user ID and our internal user ID
+      // In a real app, this would be handled by the database relations
+      let user = await storage.getUserByEmail(supabaseUser.email);
+      
+      // Create user if not exists in our local store
+      if (!user) {
+        user = await storage.createUser({
+          email: supabaseUser.email,
+          password: 'supabase-managed', // Password is managed by Supabase
+        });
       }
       
       // Store user message
       const userMessage = await storage.createMessage({
-        user_id: userId,
+        user_id: user.id,
         content: message,
         role: "user",
         session_id: sessionId
@@ -102,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Store assistant response
       const assistantMessage = await storage.createMessage({
-        user_id: userId,
+        user_id: user.id,
         content: assistantResponse,
         role: "assistant",
         session_id: sessionId
@@ -113,6 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sessionId
       });
     } catch (error) {
+      console.error('Chat API error:', error);
       if (error instanceof ZodError) {
         return res.status(400).json({ 
           message: fromZodError(error).message 
@@ -122,19 +90,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.get("/api/chat/history", async (req, res) => {
+  app.get("/api/chat/history", verifyToken, async (req, res) => {
     try {
-      const userId = req.query.userId as string;
+      const supabaseUser = req.body.supabaseUser;
       const sessionId = req.query.sessionId as string;
       
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
+      // Find or create user in our local store
+      let user = await storage.getUserByEmail(supabaseUser.email);
+      
+      if (!user) {
+        user = await storage.createUser({
+          email: supabaseUser.email,
+          password: 'supabase-managed',
+        });
       }
       
-      const messages = await storage.getMessagesBySession(parseInt(userId), sessionId);
+      const messages = await storage.getMessagesBySession(user.id, sessionId);
       
       return res.status(200).json({ messages });
     } catch (error) {
+      console.error('Chat history API error:', error);
       return res.status(500).json({ message: "Internal server error" });
     }
   });
