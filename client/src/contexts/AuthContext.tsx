@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { AuthState, AuthUser, LoginCredentials, RegisterCredentials } from '../types/auth';
-import { signIn, signUp, signOut, getUser } from '../lib/supabase';
+import { signIn, signUp, signOut, getUser, supabase } from '../lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType extends AuthState {
@@ -24,31 +24,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initializeAuth = async () => {
       try {
         console.log('Initializing authentication...');
-        const user = await getUser();
-        console.log('Authentication initialized:', !!user);
         
-        setAuthState({
-          user: user ? { id: user.id, email: user.email || '' } : null,
-          isLoading: false,
-          error: null,
-        });
+        // Check if we have a session
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (sessionData.session) {
+          // We have a session, get the user
+          const user = await getUser();
+          console.log('Authentication initialized:', !!user);
+          
+          setAuthState({
+            user: user ? { id: user.id, email: user.email || '' } : null,
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          // No active session, but that's okay - user needs to log in
+          console.log('No authentication session found - user needs to login');
+          setAuthState({
+            user: null,
+            isLoading: false,
+            error: null, // Don't show an error - it's a normal state
+          });
+        }
       } catch (error) {
         console.error('Authentication initialization error:', error);
         
-        // Provide a more helpful error message
-        const errorMessage = error instanceof Error 
-          ? `Authentication error: ${error.message}` 
-          : 'Failed to initialize authentication';
-          
-        setAuthState({
-          user: null,
-          isLoading: false,
-          error: errorMessage,
-        });
+        // Check if this is a missing session error - if so, don't show it as an error
+        if (error instanceof Error && error.message.includes('session')) {
+          console.log('Session missing - user needs to login');
+          setAuthState({
+            user: null,
+            isLoading: false,
+            error: null, // Don't show an error - it's a normal state
+          });
+        } else {
+          // Provide a more helpful error message for actual errors
+          const errorMessage = error instanceof Error 
+            ? `Authentication error: ${error.message}` 
+            : 'Failed to initialize authentication';
+            
+          setAuthState({
+            user: null,
+            isLoading: false,
+            error: errorMessage,
+          });
+        }
       }
     };
 
     initializeAuth();
+    
+    // Set up auth state change listener
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event);
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          setAuthState({
+            user: { id: session.user.id, email: session.user.email || '' },
+            isLoading: false,
+            error: null,
+          });
+        } else if (event === 'SIGNED_OUT') {
+          setAuthState({
+            user: null,
+            isLoading: false,
+            error: null,
+          });
+        }
+      }
+    );
+    
+    // Clean up listener on unmount
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (credentials: LoginCredentials) => {

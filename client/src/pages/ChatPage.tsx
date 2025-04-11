@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import ChatUI from '../components/ChatUI';
 import UserMenu from '../components/UserMenu';
+import { DatabaseSetup } from '../components/DatabaseSetup';
 import { Message } from '../types/chat';
 import { Moon, Sun } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';

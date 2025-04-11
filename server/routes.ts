@@ -1,7 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { loginUserSchema, registerUserSchema, chatRequestSchema } from "@shared/schema";
+import { chatRequestSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import crypto from "crypto";
@@ -43,40 +42,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { message, sessionId = crypto.randomUUID() } = chatRequestSchema.parse(req.body);
       const supabaseUser = req.body.supabaseUser;
       
-      // For demo purposes, we'll create a simple mapping between Supabase user ID and our internal user ID
-      // In a real app, this would be handled by the database relations
-      let user = await storage.getUserByEmail(supabaseUser.email);
-      
-      // Create user if not exists in our local store
-      if (!user) {
-        user = await storage.createUser({
-          email: supabaseUser.email,
-          password: 'supabase-managed', // Password is managed by Supabase
-        });
+      // Find or create user profile in Supabase
+      const userId = parseInt(supabaseUser.id);
+
+      // Check if the user exists in our profiles table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (userError && userError.code !== 'PGRST116') { // Not found
+        throw new Error(`User lookup error: ${userError.message}`);
       }
       
-      // Store user message
-      const userMessage = await storage.createMessage({
-        user_id: user.id,
-        content: message,
-        role: "user",
-        session_id: sessionId
-      });
+      // If user not found, create a profile
+      if (!userData) {
+        await supabase
+          .from('users')
+          .insert([{
+            id: userId,
+            email: supabaseUser.email,
+            created_at: new Date()
+          }]);
+      }
+      
+      // Store user message in Supabase
+      const { data: userMessageData, error: userMessageError } = await supabase
+        .from('messages')
+        .insert([{
+          user_id: userId,
+          content: message,
+          role: "user",
+          session_id: sessionId,
+          created_at: new Date()
+        }])
+        .select();
+        
+      if (userMessageError) {
+        throw new Error(`Failed to save user message: ${userMessageError.message}`);
+      }
       
       // This is where you would call the n8n endpoint with the message
       // For now, simulate a response
       const assistantResponse = "This is a simulated response. In a real application, this would be the response from n8n calling the Groq AI model.";
       
-      // Store assistant response
-      const assistantMessage = await storage.createMessage({
-        user_id: user.id,
-        content: assistantResponse,
-        role: "assistant",
-        session_id: sessionId
-      });
+      // Store assistant response in Supabase
+      const { data: assistantMessageData, error: assistantMessageError } = await supabase
+        .from('messages')
+        .insert([{
+          user_id: userId,
+          content: assistantResponse,
+          role: "assistant",
+          session_id: sessionId,
+          created_at: new Date()
+        }])
+        .select();
+        
+      if (assistantMessageError) {
+        throw new Error(`Failed to save assistant message: ${assistantMessageError.message}`);
+      }
       
       return res.status(200).json({ 
-        message: assistantMessage,
+        message: assistantMessageData[0],
         sessionId
       });
     } catch (error) {
@@ -90,24 +118,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Route to create necessary tables
+  app.post("/api/create-tables", verifyToken, async (req, res) => {
+    try {
+      // Create users table
+      const { error: usersError } = await supabase.rpc('exec_sql', {
+        sql: `
+          CREATE TABLE IF NOT EXISTS users (
+            id BIGINT PRIMARY KEY,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          );
+        `
+      });
+      
+      // Create messages table - not dependent on users to avoid foreign key issues
+      const { error: messagesError } = await supabase.rpc('exec_sql', {
+        sql: `
+          CREATE TABLE IF NOT EXISTS messages (
+            id SERIAL PRIMARY KEY,
+            user_id BIGINT NOT NULL,
+            content TEXT NOT NULL,
+            role TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          );
+          CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages(user_id);
+          CREATE INDEX IF NOT EXISTS idx_messages_session_id ON messages(session_id);
+        `
+      });
+      
+      if (usersError || messagesError) {
+        return res.status(500).json({ 
+          message: "Table creation failed", 
+          usersError: usersError?.message,
+          messagesError: messagesError?.message 
+        });
+      }
+      
+      return res.status(200).json({ message: "Tables created successfully" });
+    } catch (error) {
+      console.error('Table creation error:', error);
+      return res.status(500).json({ message: "Failed to create tables" });
+    }
+  });
+
   app.get("/api/chat/history", verifyToken, async (req, res) => {
     try {
       const supabaseUser = req.body.supabaseUser;
       const sessionId = req.query.sessionId as string;
+      const userId = parseInt(supabaseUser.id);
       
-      // Find or create user in our local store
-      let user = await storage.getUserByEmail(supabaseUser.email);
-      
-      if (!user) {
-        user = await storage.createUser({
-          email: supabaseUser.email,
-          password: 'supabase-managed',
-        });
+      // First check if the messages table exists
+      try {
+        // Get messages from Supabase
+        const { data: messages, error: messagesError } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('session_id', sessionId)
+          .order('created_at', { ascending: true });
+          
+        if (messagesError) {
+          // Check if the error is that the table doesn't exist
+          if (messagesError.message.includes('relation') && messagesError.message.includes('does not exist')) {
+            // Table doesn't exist, return empty array for now
+            return res.status(200).json({ messages: [] });
+          }
+          throw new Error(`Failed to retrieve message history: ${messagesError.message}`);
+        }
+        
+        return res.status(200).json({ messages: messages || [] });
+      } catch (error) {
+        // In case of any other error, return empty array
+        console.warn('Error fetching messages:', error);
+        return res.status(200).json({ messages: [] });
       }
-      
-      const messages = await storage.getMessagesBySession(user.id, sessionId);
-      
-      return res.status(200).json({ messages });
     } catch (error) {
       console.error('Chat history API error:', error);
       return res.status(500).json({ message: "Internal server error" });
