@@ -23,17 +23,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        console.log('Initializing authentication...');
         const user = await getUser();
+        console.log('Authentication initialized:', !!user);
+        
         setAuthState({
           user: user ? { id: user.id, email: user.email || '' } : null,
           isLoading: false,
           error: null,
         });
       } catch (error) {
+        console.error('Authentication initialization error:', error);
+        
+        // Provide a more helpful error message
+        const errorMessage = error instanceof Error 
+          ? `Authentication error: ${error.message}` 
+          : 'Failed to initialize authentication';
+          
         setAuthState({
           user: null,
           isLoading: false,
-          error: 'Failed to initialize authentication',
+          error: errorMessage,
         });
       }
     };
