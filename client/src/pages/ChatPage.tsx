@@ -43,14 +43,14 @@ const ChatPage: React.FC = () => {
     data: chatHistory,
     isLoading: isFetchingHistory,
     error: fetchError,
-  } = useQuery({
+  } = useQuery<{ messages: Message[] }>({
     queryKey: ['/api/chat/history', user?.id, sessionId],
     enabled: !!user,
   });
 
   useEffect(() => {
-    if (chatHistory && 'messages' in chatHistory) {
-      setMessages(chatHistory.messages || []);
+    if (chatHistory && chatHistory.messages) {
+      setMessages(chatHistory.messages);
     }
   }, [chatHistory]);
 
