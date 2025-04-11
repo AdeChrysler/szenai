@@ -49,8 +49,8 @@ const ChatPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (chatHistory?.messages) {
-      setMessages(chatHistory.messages);
+    if (chatHistory && 'messages' in chatHistory) {
+      setMessages(chatHistory.messages || []);
     }
   }, [chatHistory]);
 
@@ -136,6 +136,11 @@ const ChatPage: React.FC = () => {
           </div>
         </div>
       </header>
+
+      {/* Database Setup Component */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <DatabaseSetup />
+      </div>
 
       {/* Chat UI */}
       <ChatUI

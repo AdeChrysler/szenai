@@ -1,4 +1,5 @@
 import { users, messages, type User, type InsertUser, type Message, type InsertMessage } from "@shared/schema";
+import { pool } from './init-db';
 
 export interface IStorage {
   // User methods
@@ -11,58 +12,58 @@ export interface IStorage {
   getMessagesBySession(userId: number, sessionId: string): Promise<Message[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private messages: Map<number, Message>;
-  private userIdCounter: number;
-  private messageIdCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.messages = new Map();
-    this.userIdCounter = 1;
-    this.messageIdCounter = 1;
-  }
-
+// PostgreSQL-based storage implementation
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await pool.query(
+      'SELECT * FROM users WHERE id = $1',
+      [id]
+    );
+    
+    return result.rows[0] || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email,
+    const result = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
     );
+    
+    return result.rows[0] || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const now = new Date();
-    const user: User = { 
-      ...insertUser, 
-      id,
-      created_at: now
-    };
-    this.users.set(id, user);
-    return user;
+    const result = await pool.query(
+      'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *',
+      [insertUser.email, insertUser.password]
+    );
+    
+    return result.rows[0];
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = this.messageIdCounter++;
-    const now = new Date();
-    const message: Message = {
-      ...insertMessage,
-      id,
-      created_at: now
-    };
-    this.messages.set(id, message);
-    return message;
+    const result = await pool.query(
+      'INSERT INTO messages (user_id, content, role, session_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [
+        insertMessage.user_id,
+        insertMessage.content,
+        insertMessage.role,
+        insertMessage.session_id
+      ]
+    );
+    
+    return result.rows[0];
   }
 
   async getMessagesBySession(userId: number, sessionId: string): Promise<Message[]> {
-    return Array.from(this.messages.values())
-      .filter(message => message.user_id === userId && message.session_id === sessionId)
-      .sort((a, b) => a.id - b.id);
+    const result = await pool.query(
+      'SELECT * FROM messages WHERE user_id = $1 AND session_id = $2 ORDER BY created_at ASC',
+      [userId, sessionId]
+    );
+    
+    return result.rows;
   }
 }
 
-export const storage = new MemStorage();
+// Export DatabaseStorage instance
+export const storage = new DatabaseStorage();

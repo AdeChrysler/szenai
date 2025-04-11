@@ -1,41 +1,64 @@
-import { createClient } from '@supabase/supabase-js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import pkg from 'pg';
+const { Pool } = pkg;
 
-// Get the current file path and directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Create a PostgreSQL connection pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-// Create Supabase client for server-side operations
-const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Initialize database tables
+// Initialize database tables using PostgreSQL
 export async function initializeDatabase() {
+  const client = await pool.connect();
+  
   try {
     console.log('Initializing database tables...');
     
-    // Check if users table exists
-    const { error: usersTableError } = await supabase.from('users').select('count').limit(1);
+    // Start a transaction
+    await client.query('BEGIN');
     
-    if (usersTableError && usersTableError.code === '42P01') {
-      console.log('Users table does not exist. It will be created through the API.');
-    } else {
-      console.log('Users table already exists.');
-    }
+    // Create users table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    console.log('Users table created or already exists');
     
-    // Check if messages table exists
-    const { error: messagesTableError } = await supabase.from('messages').select('count').limit(1);
+    // Create messages table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+        session_id TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    console.log('Messages table created or already exists');
     
-    if (messagesTableError && messagesTableError.code === '42P01') {
-      console.log('Messages table does not exist. It will be created through the API.');
-    } else {
-      console.log('Messages table already exists.');
-    }
+    // Create indexes for faster queries
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages(user_id);
+      CREATE INDEX IF NOT EXISTS idx_messages_session_id ON messages(session_id);
+    `);
+    console.log('Indexes created or already exist');
     
-    console.log('Database initialization check complete.');
+    // Commit the transaction
+    await client.query('COMMIT');
+    
+    console.log('Database initialization complete');
   } catch (error) {
+    // Rollback in case of error
+    await client.query('ROLLBACK');
     console.error('Failed to initialize database:', error);
+  } finally {
+    client.release();
   }
 }
+
+// Export pool for reuse
+export { pool };

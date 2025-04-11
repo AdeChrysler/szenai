@@ -5,7 +5,7 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),  // Making password optional since Supabase handles auth
   created_at: timestamp("created_at").defaultNow(),
 });
 
@@ -22,6 +22,8 @@ export const messages = pgTable("messages", {
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   password: true,
+}).extend({
+  id: z.number().optional(),  // Allow setting ID for Supabase user connections
 });
 
 export const loginUserSchema = z.object({
