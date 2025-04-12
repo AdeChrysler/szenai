@@ -16,7 +16,11 @@ import {
   ChevronRight,
   ArrowUpRight,
   Zap,
-  UserCircle
+  UserCircle,
+  MessageCircle,
+  UserPlus,
+  LineChart,
+  Timer
 } from 'lucide-react';
 import { 
   Card, 
@@ -632,6 +636,38 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
+  // Sample data for dashboard
+  const recentChats = [
+    { 
+      name: 'Budi Santoso', 
+      time: '2 jam yang lalu', 
+      message: 'Apakah bisa custom untuk jumlah user?',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Rina Wati', 
+      time: '3 jam yang lalu', 
+      message: 'Saya tertarik dengan paket premium',
+      status: 'belum',
+      platform: 'Instagram'
+    },
+    { 
+      name: 'Ahmad Fauzi', 
+      time: '5 jam yang lalu', 
+      message: 'Tolong info harga untuk 10 agent',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Dewi Lestari', 
+      time: '7 jam yang lalu', 
+      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
+      status: 'terjawab',
+      platform: 'Instagram'
+    },
+  ];
+  
   return (
     <DashboardLayout>
       
