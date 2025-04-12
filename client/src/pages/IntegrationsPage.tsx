@@ -11,7 +11,6 @@ import {
   RefreshCw,
   Key,
   MessageSquareText,
-  BrandGoogle,
   Database
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -110,7 +109,7 @@ const IntegrationsPage: React.FC = () => {
       id: 'sheets',
       name: 'Google Sheets',
       description: 'Sync leads and conversation data with Google Sheets',
-      icon: <BrandGoogle className="h-6 w-6 text-green-600" />,
+      icon: <CustomBrandGoogle className="h-6 w-6 text-green-600" />,
       isConnected: false,
       category: 'data',
       setupUrl: 'https://developers.google.com/sheets/api'
@@ -496,6 +495,24 @@ const IntegrationsPage: React.FC = () => {
     </DashboardLayout>
   );
 };
+
+// Custom Google Brand icon
+const CustomBrandGoogle = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M17.788 5.108A9 9 0 1021 12h-8"></path>
+  </svg>
+);
 
 // Adding missing Code icon
 const Code = (props: React.SVGProps<SVGSVGElement>) => (
