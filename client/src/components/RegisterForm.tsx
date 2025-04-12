@@ -30,7 +30,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, onSwitchToLogin, 
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Email address</FormLabel>
+              <FormLabel className="text-sm font-medium text-gray-200">Email address</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -38,8 +38,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, onSwitchToLogin, 
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="Email address"
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  placeholder="email@example.com"
+                  className="appearance-none rounded-xl h-12 relative block w-full px-4 py-3 bg-blue-950/50 backdrop-blur-sm border border-blue-900/50 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200"
                 />
               </FormControl>
               <FormMessage />
@@ -95,22 +95,22 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, onSwitchToLogin, 
           <Button
             type="submit"
             disabled={isLoading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="group relative w-full flex justify-center py-3 px-4 h-12 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-lg shadow-blue-900/30 transition-all duration-200 hover:shadow-blue-800/40"
           >
-            {isLoading ? 'Registering...' : 'Register'}
+            {isLoading ? 'Mendaftar...' : 'Daftar Sekarang'}
           </Button>
         </div>
         
         <div className="text-center">
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-            Already have an account?{' '}
+          <p className="mt-3 text-sm text-gray-300">
+            Sudah punya akun?{' '}
             <Button
               variant="link"
-              className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 p-0"
+              className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200 p-0"
               onClick={onSwitchToLogin}
               type="button"
             >
-              Sign in
+              Masuk disini
             </Button>
           </p>
         </div>

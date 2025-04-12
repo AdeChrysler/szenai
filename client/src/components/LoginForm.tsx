@@ -30,8 +30,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToRegister, isL
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">Email address</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-sm font-medium text-gray-200">Email address</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -39,11 +39,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToRegister, isL
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="Email address"
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  placeholder="email@example.com"
+                  className="appearance-none rounded-xl h-12 relative block w-full px-4 py-3 bg-blue-950/50 backdrop-blur-sm border border-blue-900/50 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200"
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-400" />
             </FormItem>
           )}
         />
@@ -52,8 +52,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToRegister, isL
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">Password</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-sm font-medium text-gray-200">Password</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -61,53 +61,53 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onSwitchToRegister, isL
                   type="password"
                   autoComplete="current-password"
                   required
-                  placeholder="Password"
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  placeholder="••••••••"
+                  className="appearance-none rounded-xl h-12 relative block w-full px-4 py-3 bg-blue-950/50 backdrop-blur-sm border border-blue-900/50 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200"
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-400" />
             </FormItem>
           )}
         />
 
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Checkbox id="remember-me" name="remember-me" className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded" />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+            <Checkbox id="remember-me" name="remember-me" className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-blue-800 rounded" />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
               Remember me
             </label>
           </div>
 
           <div className="text-sm">
-            <a href="#" className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">
-              Forgot your password?
+            <a href="#" className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200">
+              Lupa password?
             </a>
           </div>
         </div>
 
-        <div>
+        <div className="pt-2">
           <Button
             type="submit"
             disabled={isLoading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="group relative w-full flex justify-center py-3 px-4 h-12 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-lg shadow-blue-900/30 transition-all duration-200 hover:shadow-blue-800/40"
           >
             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-              <LockOpen className="h-5 w-5 text-primary-500 group-hover:text-primary-400" aria-hidden="true" />
+              <LockOpen className="h-5 w-5 text-blue-300" aria-hidden="true" />
             </span>
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? 'Sedang masuk...' : 'Masuk ke Akun'}
           </Button>
         </div>
         
         <div className="text-center">
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-            Don't have an account?{' '}
+          <p className="mt-3 text-sm text-gray-300">
+            Belum punya akun?{' '}
             <Button
               variant="link"
-              className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 p-0"
+              className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200 p-0"
               onClick={onSwitchToRegister}
               type="button"
             >
-              Register here
+              Daftar disini
             </Button>
           </p>
         </div>
