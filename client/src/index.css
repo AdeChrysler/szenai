@@ -62,46 +62,7 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes floatSubtle {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes floatRotate {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-4px) rotate(1deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2); }
-  70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-}
-
-@keyframes subtleGlow {
-  0% { box-shadow: 0 0 3px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
-  100% { box-shadow: 0 0 3px rgba(59, 130, 246, 0.3); }
-}
-
-@keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* Animation keyframes removed */
 
 /* Refined premium components with subtle animations */
 .premium-card {
@@ -282,22 +243,12 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.2);
 }
 
-/* Dashboard card animations */
+/* Dashboard card styles without animations */
 .dashboard-card {
-  transition: all 0.3s ease;
-  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-}
-
-/* Table row animations */
-.table-row-animate {
-  transition: all 0.2s ease-out;
-}
-
+/* Table row hover effect without animation */
 .table-row-animate:hover {
   background-color: rgba(59, 130, 246, 0.05);
 }
