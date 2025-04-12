@@ -1,0 +1,84 @@
+Saya sudah membangun semua fungsi inti dan backend dari produk saya, **Zenith AI** — sebuah AI Chatbot CRM untuk UMKM Indonesia. Website dan dashboard juga sudah selesai.
+
+Sekarang saya ingin kamu bantu **mengoptimalkan semua konten frontend di halaman publik (marketing site)** agar:
+
+- Tidak terdengar generik seperti chatbot biasa
+- Bisa langsung menjelaskan value dari produk ini secara tajam
+- Menggunakan Bahasa Indonesia yang human dan profesional
+- Memiliki struktur yang persuasive, seperti halaman SaaS premium
+- Fokus pada konversi: mendorong pengunjung untuk daftar, minta demo, atau langsung coba
+
+---
+
+### ⚡️ Produk Singkat:
+- Nama: **Zenith AI**
+- Jenis: AI Chatbot CRM untuk UMKM Indonesia
+- Gunanya: membalas chat WhatsApp/DM otomatis, kumpulkan leads, simpan histori, bantu closing deal, dan follow up otomatis
+
+---
+
+### 🚫 Bukan chatbot biasa:
+Tolong jangan pakai gaya copywriting seperti bot FAQ. Zenith AI **bukan** sekadar bot untuk jawab pertanyaan.
+
+**Zenith AI didesain untuk:**
+- Booking meeting otomatis
+- Menutup penjualan langsung di chat
+- Ngubah pengunjung pasif jadi pembeli aktif
+- Follow up tanpa intervensi manusia
+- Simpan & tag semua leads dengan rapi
+
+---
+
+### 🎯 Goal dari halaman publik:
+1. Menjelaskan manfaat produk dengan cepat & visual
+2. Menumbuhkan trust
+3. Menunjukkan hasil nyata (dummy success story juga boleh)
+4. Mendorong konversi (sign up, demo, atau trial)
+
+---
+
+### 📄 Halaman yang perlu kamu bantu rombak kontennya:
+#### 1. **Landing page (/)**  
+Rework semua konten utama:
+- Headline + subheadline
+- CTA section
+- Masalah yang dialami user (Pain)
+- Solusi produk (Gain)
+- Fitur unggulan (dibuat user-focused, bukan teknikal)
+- Testimoni atau studi kasus
+- Pricing (tanpa angka pun tidak apa-apa)
+- CTA penutup
+
+#### 2. **/fitur**  
+Fokus pada value per fitur, bukan teknikalitas. Jangan sekadar “Integrasi WhatsApp”, tapi “Kumpulkan leads dari WA tanpa takut chat kelewat”.
+
+#### 3. **/success-stories**  
+Bantu isi dummy dengan cerita sukses fiktif tapi realistis (misalnya: “Toko Kopi Nusantara berhasil menurunkan waktu balas dari 4 jam ke 5 menit”).
+
+#### 4. **/partnerships**  
+Tawarkan program mitra resmi (reseller / integrator), jelaskan benefit kerja sama, siapa yang cocok daftar, dan CTA formulir pengajuan.
+
+#### 5. **/tentang-kami**  
+Singkat, profesional, percaya diri. Ceritakan misi Zenith AI bantu UMKM tumbuh lewat teknologi.
+
+#### 6. **/kontak**  
+Kalimat penjelas + call to action (contoh: “Punya pertanyaan atau butuh demo langsung? Tim kami siap bantu kapan saja.”)
+
+---
+
+### 📢 Gaya penulisan:
+- Bahasa Indonesia profesional, tidak kaku, mudah dipahami
+- Outcome-driven (fokus pada hasil buat user)
+- Hindari istilah teknikal tanpa penjelasan
+- Gunakan nada yang percaya diri tapi tidak menjual berlebihan
+- Jangan gunakan lorem ipsum
+
+---
+
+🎁 Output yang saya harapkan:
+- Teks copywriting baru untuk tiap halaman
+- Urutan section yang lebih tepat jika perlu
+- Saran CTA atau struktur tambahan yang meningkatkan konversi
+
+Tolong fokus di sisi **konten dan komunikasi**, bukan coding atau desain.
+
