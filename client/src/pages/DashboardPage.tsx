@@ -75,19 +75,21 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         <nav className="flex-1 p-4 space-y-1">
           {navigationItems.map((item) => (
-            <Link key={item.path} href={item.path}>
-              <span className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
-                location === item.path 
-                  ? 'bg-blue-600/20 text-blue-400 font-medium' 
-                  : 'text-gray-300 hover:bg-[#182338] hover:text-blue-300'
-              }`}>
-                {item.icon}
-                <span>{item.label}</span>
-                {location === item.path && (
-                  <div className="ml-auto w-1.5 h-5 bg-blue-500 rounded-full"></div>
-                )}
-              </span>
-            </Link>
+            <div key={item.path} className="w-full">
+              <Link href={item.path}>
+                <div className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                  location === item.path 
+                    ? 'bg-blue-600/20 text-blue-400 font-medium' 
+                    : 'text-gray-300 hover:bg-[#182338] hover:text-blue-300'
+                }`}>
+                  {item.icon}
+                  <span>{item.label}</span>
+                  {location === item.path && (
+                    <div className="ml-auto w-1.5 h-5 bg-blue-500 rounded-full"></div>
+                  )}
+                </div>
+              </Link>
+            </div>
           ))}
         </nav>
 
@@ -121,22 +123,24 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-6rem)]">
               {navigationItems.map((item, index) => (
-                <Link key={item.path} href={item.path}>
-                  <span 
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
-                      location === item.path 
-                        ? 'bg-blue-600/20 text-blue-400 font-medium' 
-                        : 'text-gray-300 hover:bg-[#182338] hover:text-blue-300'
-                    }`}
-                    onClick={toggleSidebar}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                    {location === item.path && (
-                      <div className="ml-auto w-1.5 h-5 bg-blue-500 rounded-full"></div>
-                    )}
-                  </span>
-                </Link>
+                <div key={item.path} className="w-full">
+                  <Link href={item.path}>
+                    <div 
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                        location === item.path 
+                          ? 'bg-blue-600/20 text-blue-400 font-medium' 
+                          : 'text-gray-300 hover:bg-[#182338] hover:text-blue-300'
+                      }`}
+                      onClick={toggleSidebar}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                      {location === item.path && (
+                        <div className="ml-auto w-1.5 h-5 bg-blue-500 rounded-full"></div>
+                      )}
+                    </div>
+                  </Link>
+                </div>
               ))}
             </nav>
 
