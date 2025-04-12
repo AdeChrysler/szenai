@@ -31,7 +31,7 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login({ email, password });
       setLocation('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
