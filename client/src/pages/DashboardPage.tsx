@@ -349,8 +349,7 @@ const DashboardPage: React.FC = () => {
           {statCards.map((card, index) => (
             <Card 
               key={index} 
-              className="dark:border-gray-800 dark:bg-gray-900 overflow-hidden dashboard-card animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="dark:border-gray-800 dark:bg-gray-900 overflow-hidden dashboard-card"
             >
               <CardHeader className="pb-2 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -361,10 +360,10 @@ const DashboardPage: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold animate-slide-in-right" style={{ animationDelay: `${(index * 0.1) + 0.2}s` }}>
+                <div className="text-2xl font-bold">
                   {card.value}
                 </div>
-                <div className="flex items-center mt-1 animate-fade-in" style={{ animationDelay: `${(index * 0.1) + 0.3}s` }}>
+                <div className="flex items-center mt-1">
                   <span className={`text-xs font-medium ${card.isPositive ? 'text-green-600' : 'text-red-600'}`}>
                     {card.change}
                   </span>
@@ -380,7 +379,7 @@ const DashboardPage: React.FC = () => {
         {/* Chart and Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chart */}
-          <Card className="lg:col-span-2 dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in">
+          <Card className="lg:col-span-2 dark:border-gray-800 dark:bg-gray-900 dashboard-card">
             <CardHeader>
               <CardTitle>Aktivitas Chat</CardTitle>
               <CardDescription>7 hari terakhir</CardDescription>
@@ -388,26 +387,26 @@ const DashboardPage: React.FC = () => {
             <CardContent>
               <div className="h-80 flex items-end gap-2 pt-10">
                 {[
-                  {day: 'Sen', value: 42, chats: 34, platform: 'WhatsApp'},
-                  {day: 'Sel', value: 65, chats: 52, platform: 'Instagram'},
-                  {day: 'Rab', value: 53, chats: 45, platform: 'WhatsApp'},
-                  {day: 'Kam', value: 78, chats: 63, platform: 'Web Chat'},
-                  {day: 'Jum', value: 75, chats: 60, platform: 'Instagram'},
-                  {day: 'Sab', value: 90, chats: 72, platform: 'WhatsApp'},
-                  {day: 'Min', value: 62, chats: 48, platform: 'Web Chat'}
+                  {day: 'Sen', value: 42, chats: 34, platform: 'WhatsApp', whatsapp: 22, instagram: 8, webchat: 4},
+                  {day: 'Sel', value: 65, chats: 52, platform: 'Instagram', whatsapp: 18, instagram: 27, webchat: 7},
+                  {day: 'Rab', value: 53, chats: 45, platform: 'WhatsApp', whatsapp: 25, instagram: 14, webchat: 6},
+                  {day: 'Kam', value: 78, chats: 63, platform: 'Web Chat', whatsapp: 20, instagram: 30, webchat: 13},
+                  {day: 'Jum', value: 75, chats: 60, platform: 'Instagram', whatsapp: 15, instagram: 35, webchat: 10},
+                  {day: 'Sab', value: 90, chats: 72, platform: 'WhatsApp', whatsapp: 40, instagram: 25, webchat: 7},
+                  {day: 'Min', value: 62, chats: 48, platform: 'Web Chat', whatsapp: 17, instagram: 19, webchat: 12}
                 ].map((item, index) => (
                   <div key={index} className="relative flex-1 transition-all group">
                     <div 
-                      className="bg-blue-600 rounded-t-md w-full transition-all duration-1000 animate-slide-in-up hover:bg-blue-500"
+                      className="bg-blue-600 rounded-t-md w-full transition-all hover:bg-blue-500"
                       style={{ 
-                        height: `${item.value}%`, 
-                        animationDelay: `${0.1 + (index * 0.1)}s`,
-                        animationDuration: '0.8s'
+                        height: `${item.value}%`
                       }}
                     >
                       <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-blue-900 text-white px-2 py-1.5 rounded-md text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 shadow-lg">
                         <div className="font-medium">{item.chats} percakapan</div>
-                        <div className="text-blue-200 text-[10px]">Via {item.platform}</div>
+                        <div className="text-blue-200 text-[10px]">WhatsApp: {item.whatsapp}</div>
+                        <div className="text-blue-200 text-[10px]">Instagram: {item.instagram}</div>
+                        <div className="text-blue-200 text-[10px]">Web Chat: {item.webchat}</div>
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-blue-900"></div>
                       </div>
                     </div>
@@ -421,7 +420,7 @@ const DashboardPage: React.FC = () => {
           </Card>
           
           {/* Recent Activity */}
-          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle>Percakapan Terbaru</CardTitle>
@@ -437,10 +436,9 @@ const DashboardPage: React.FC = () => {
                 {recentChats.map((chat, index) => (
                   <div 
                     key={index} 
-                    className="flex items-start gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all animate-fade-in"
-                    style={{ animationDelay: `${0.3 + (index * 0.1)}s` }}
+                    className="flex items-start gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all"
                   >
-                    <Avatar className="h-9 w-9 animate-subtle-glow">
+                    <Avatar className="h-9 w-9">
                       <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                         {chat.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
@@ -452,10 +450,10 @@ const DashboardPage: React.FC = () => {
                       </div>
                       <p className="text-xs text-gray-500 truncate">{chat.message}</p>
                       <div className="flex gap-2">
-                        <Badge variant={chat.status === 'terjawab' ? 'outline' : 'secondary'} className="text-[10px] h-5 animate-pop" style={{ animationDelay: `${0.4 + (index * 0.1)}s` }}>
+                        <Badge variant={chat.status === 'terjawab' ? 'outline' : 'secondary'} className="text-[10px] h-5">
                           {chat.status === 'terjawab' ? 'Terjawab' : 'Perlu Ditindak'}
                         </Badge>
-                        <Badge variant="outline" className="text-[10px] h-5 animate-pop" style={{ animationDelay: `${0.5 + (index * 0.1)}s` }}>
+                        <Badge variant="outline" className="text-[10px] h-5">
                           {chat.platform}
                         </Badge>
                       </div>
@@ -468,12 +466,12 @@ const DashboardPage: React.FC = () => {
         </div>
         
         {/* Hot Leads */}
-        <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">
-              <CardTitle className="animate-fade-in-left" style={{ animationDelay: '0.4s' }}>Leads Terpanas</CardTitle>
+              <CardTitle>Leads Terpanas</CardTitle>
               <Link href="/leads">
-                <Button variant="link" className="h-auto p-0 text-blue-600 hover:text-blue-500 transition-colors animate-fade-in-right" style={{ animationDelay: '0.4s' }}>
+                <Button variant="link" className="h-auto p-0 text-blue-600 hover:text-blue-500 transition-colors">
                   Kelola semua leads
                 </Button>
               </Link>
@@ -483,7 +481,7 @@ const DashboardPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left [&>th]:py-3 [&>th]:px-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-800 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                  <tr className="text-left [&>th]:py-3 [&>th]:px-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-800">
                     <th>Nama</th>
                     <th>Kontak</th>
                     <th>Sumber</th>
@@ -518,12 +516,11 @@ const DashboardPage: React.FC = () => {
                   ].map((lead, index) => (
                     <tr 
                       key={index} 
-                      className="border-b dark:border-gray-800 [&>td]:py-3 [&>td]:px-2 table-row-animate animate-fade-in hover:shadow-sm"
-                      style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+                      className="border-b dark:border-gray-800 [&>td]:py-3 [&>td]:px-2 table-row-animate hover:shadow-sm"
                     >
                       <td>
                         <div className="flex items-center gap-2">
-                          <UserCircle className="w-7 h-7 text-blue-600 animate-subtle-glow" />
+                          <UserCircle className="w-7 h-7 text-blue-600" />
                           <span>{lead.name}</span>
                         </div>
                       </td>
@@ -561,9 +558,9 @@ const DashboardPage: React.FC = () => {
         
         {/* Campaign Performance */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card">
             <CardHeader>
-              <CardTitle className="animate-fade-in-left" style={{ animationDelay: '0.5s' }}>Status Integrasi</CardTitle>
+              <CardTitle>Status Integrasi</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -575,8 +572,7 @@ const DashboardPage: React.FC = () => {
                 ].map((integration, index) => (
                   <div 
                     key={index} 
-                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all animate-slide-in-right"
-                    style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all"
                   >
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${
@@ -598,8 +594,7 @@ const DashboardPage: React.FC = () => {
               <Link href="/integrations" className="w-full">
                 <Button 
                   variant="outline" 
-                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-600/10 dark:border-blue-500 dark:text-blue-500 transition-all hover:scale-[1.02] animate-fade-in"
-                  style={{ animationDelay: '1s' }}
+                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-600/10 dark:border-blue-500 dark:text-blue-500 transition-all hover:scale-[1.02]"
                 >
                   Kelola Integrasi
                 </Button>
@@ -607,9 +602,9 @@ const DashboardPage: React.FC = () => {
             </CardFooter>
           </Card>
           
-          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <Card className="dark:border-gray-800 dark:bg-gray-900 dashboard-card">
             <CardHeader>
-              <CardTitle className="animate-fade-in-left" style={{ animationDelay: '0.6s' }}>Chatbot Performance</CardTitle>
+              <CardTitle>Chatbot Performance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -621,8 +616,7 @@ const DashboardPage: React.FC = () => {
                 ].map((metric, index) => (
                   <div 
                     key={index} 
-                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all animate-slide-in-right"
-                    style={{ animationDelay: `${0.7 + (index * 0.1)}s` }}
+                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all"
                   >
                     <span className="text-gray-600 dark:text-gray-400">{metric.metric}</span>
                     <span className="font-medium">{metric.value}</span>
@@ -633,8 +627,7 @@ const DashboardPage: React.FC = () => {
             <CardFooter>
               <Link href="/analytics" className="w-full">
                 <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-[1.02] animate-fade-in group"
-                  style={{ animationDelay: '1.1s' }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-[1.02] group"
                 >
                   Lihat Analisis Lengkap
                   <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
