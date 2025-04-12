@@ -43,6 +43,38 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
+  // Sample data for dashboard moved here from DashboardPage
+  const recentChats = [
+    { 
+      name: 'Budi Santoso', 
+      time: '2 jam yang lalu', 
+      message: 'Apakah bisa custom untuk jumlah user?',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Rina Wati', 
+      time: '3 jam yang lalu', 
+      message: 'Saya tertarik dengan paket premium',
+      status: 'belum',
+      platform: 'Instagram'
+    },
+    { 
+      name: 'Ahmad Fauzi', 
+      time: '5 jam yang lalu', 
+      message: 'Tolong info harga untuk 10 agent',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Dewi Lestari', 
+      time: '7 jam yang lalu', 
+      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
+      status: 'terjawab',
+      platform: 'Instagram'
+    },
+  ];
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -604,38 +636,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
 // Dashboard Home
 const DashboardPage: React.FC = () => {
-  // Sample data for dashboard
-  const recentChats = [
-    { 
-      name: 'Budi Santoso', 
-      time: '2 jam yang lalu', 
-      message: 'Apakah bisa custom untuk jumlah user?',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Rina Wati', 
-      time: '3 jam yang lalu', 
-      message: 'Saya tertarik dengan paket premium',
-      status: 'belum',
-      platform: 'Instagram'
-    },
-    { 
-      name: 'Ahmad Fauzi', 
-      time: '5 jam yang lalu', 
-      message: 'Tolong info harga untuk 10 agent',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Dewi Lestari', 
-      time: '7 jam yang lalu', 
-      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
-      status: 'terjawab',
-      platform: 'Instagram'
-    },
-  ];
-
   return (
     <DashboardLayout>
       
