@@ -264,121 +264,72 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         {/* Page content */}
         <main className="flex-1 p-4 sm:p-5 md:p-6 overflow-x-hidden">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
-};
-
-// Dashboard Home
-const DashboardPage: React.FC = () => {
-  // Sample data for dashboard
-  const statCards = [
-    { 
-      title: 'Total Leads', 
-      value: '157', 
-      change: '+12%', 
-      isPositive: true,
-      description: 'vs. minggu lalu',
-      icon: <Users className="h-5 w-5 text-blue-600" />
-    },
-    { 
-      title: 'Percakapan Aktif', 
-      value: '43', 
-      change: '+7%',
-      isPositive: true, 
-      description: 'vs. minggu lalu',
-      icon: <MessageSquare className="h-5 w-5 text-green-600" />
-    },
-    { 
-      title: 'Konversi Rata-rata', 
-      value: '28%', 
-      change: '-2%',
-      isPositive: false, 
-      description: 'vs. minggu lalu',
-      icon: <BarChart2 className="h-5 w-5 text-orange-600" />
-    },
-    { 
-      title: 'Waktu Respons', 
-      value: '2.3 menit', 
-      change: '-12%',
-      isPositive: true, 
-      description: 'vs. minggu lalu',
-      icon: <Zap className="h-5 w-5 text-purple-600" />
-    }
-  ];
-
-  const recentChats = [
-    { 
-      name: 'Budi Santoso', 
-      time: '2 jam yang lalu', 
-      message: 'Apakah bisa custom untuk jumlah user?',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Rina Wati', 
-      time: '3 jam yang lalu', 
-      message: 'Saya tertarik dengan paket premium',
-      status: 'belum',
-      platform: 'Instagram'
-    },
-    { 
-      name: 'Ahmad Fauzi', 
-      time: '5 jam yang lalu', 
-      message: 'Tolong info harga untuk 10 agent',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Dewi Lestari', 
-      time: '7 jam yang lalu', 
-      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
-      status: 'terjawab',
-      platform: 'Instagram'
-    },
-  ];
-
-  return (
-    <DashboardLayout>
-      <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-gray-500 dark:text-gray-400">Selamat datang kembali di Zenith AI</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {statCards.map((card, index) => (
-            <Card 
-              key={index} 
-              className="dark:border-gray-800 dark:bg-gray-900 overflow-hidden dashboard-card"
-            >
-              <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {card.title}
-                </CardTitle>
-                <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
-                  {card.icon}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {card.value}
-                </div>
-                <div className="flex items-center mt-1">
-                  <span className={`text-xs font-medium ${card.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                    {card.change}
-                  </span>
-                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
-                    {card.description}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {[
+              { 
+                title: "Total Pesan", 
+                value: "2,437", 
+                change: "+12.4%", 
+                changeType: "positive",
+                icon: <MessageCircleIcon className="h-5 w-5 text-blue-500" /> 
+              },
+              { 
+                title: "Pengguna Baru", 
+                value: "187", 
+                change: "+32.1%", 
+                changeType: "positive",
+                icon: <UserPlusIcon className="h-5 w-5 text-green-500" /> 
+              },
+              { 
+                title: "Tingkat Konversi", 
+                value: "3.2%", 
+                change: "+0.8%", 
+                changeType: "positive",
+                icon: <LineChartIcon className="h-5 w-5 text-yellow-500" /> 
+              },
+              { 
+                title: "Waktu Respons", 
+                value: "~1.4s", 
+                change: "-0.3s", 
+                changeType: "positive",
+                icon: <TimerIcon className="h-5 w-5 text-purple-500" /> 
+              }
+            ].map((card, index) => (
+              <Card
+                key={index}
+                className="dark:border-gray-800 dark:bg-gray-900 dashboard-card"
+              >
+                <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                  <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {card.title}
+                  </CardTitle>
+                  <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
+                    {card.icon}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {card.value}
+                  </div>
+                  <div className="flex items-center mt-1">
+                    <span className={`text-xs font-medium ${card.changeType === "positive" ? 'text-green-600' : 'text-red-600'}`}>
+                      {card.change}
+                    </span>
+                    <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      {/* Add description here if needed */}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
         {/* Chart and Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -641,6 +592,49 @@ const DashboardPage: React.FC = () => {
           </Card>
         </div>
       </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+// Dashboard Home
+const DashboardPage: React.FC = () => {
+  // Sample data for dashboard
+  const recentChats = [
+    { 
+      name: 'Budi Santoso', 
+      time: '2 jam yang lalu', 
+      message: 'Apakah bisa custom untuk jumlah user?',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Rina Wati', 
+      time: '3 jam yang lalu', 
+      message: 'Saya tertarik dengan paket premium',
+      status: 'belum',
+      platform: 'Instagram'
+    },
+    { 
+      name: 'Ahmad Fauzi', 
+      time: '5 jam yang lalu', 
+      message: 'Tolong info harga untuk 10 agent',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Dewi Lestari', 
+      time: '7 jam yang lalu', 
+      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
+      status: 'terjawab',
+      platform: 'Instagram'
+    },
+  ];
+
+  return (
+    <DashboardLayout>
+      
     </DashboardLayout>
   );
 };
