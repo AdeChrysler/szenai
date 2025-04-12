@@ -282,28 +282,28 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                 value: "2,437", 
                 change: "+12.4%", 
                 changeType: "positive",
-                icon: <MessageCircleIcon className="h-5 w-5 text-blue-500" /> 
+                icon: <MessageCircle className="h-5 w-5 text-blue-500" /> 
               },
               { 
                 title: "Pengguna Baru", 
                 value: "187", 
                 change: "+32.1%", 
                 changeType: "positive",
-                icon: <UserPlusIcon className="h-5 w-5 text-green-500" /> 
+                icon: <UserPlus className="h-5 w-5 text-green-500" /> 
               },
               { 
                 title: "Tingkat Konversi", 
                 value: "3.2%", 
                 change: "+0.8%", 
                 changeType: "positive",
-                icon: <LineChartIcon className="h-5 w-5 text-yellow-500" /> 
+                icon: <LineChart className="h-5 w-5 text-yellow-500" /> 
               },
               { 
                 title: "Waktu Respons", 
                 value: "~1.4s", 
                 change: "-0.3s", 
                 changeType: "positive",
-                icon: <TimerIcon className="h-5 w-5 text-purple-500" /> 
+                icon: <Timer className="h-5 w-5 text-purple-500" /> 
               }
             ].map((card, index) => (
               <Card
@@ -636,38 +636,6 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
-  // Sample data for dashboard
-  const recentChats = [
-    { 
-      name: 'Budi Santoso', 
-      time: '2 jam yang lalu', 
-      message: 'Apakah bisa custom untuk jumlah user?',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Rina Wati', 
-      time: '3 jam yang lalu', 
-      message: 'Saya tertarik dengan paket premium',
-      status: 'belum',
-      platform: 'Instagram'
-    },
-    { 
-      name: 'Ahmad Fauzi', 
-      time: '5 jam yang lalu', 
-      message: 'Tolong info harga untuk 10 agent',
-      status: 'terjawab',
-      platform: 'WhatsApp'
-    },
-    { 
-      name: 'Dewi Lestari', 
-      time: '7 jam yang lalu', 
-      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
-      status: 'terjawab',
-      platform: 'Instagram'
-    },
-  ];
-  
   return (
     <DashboardLayout>
       
