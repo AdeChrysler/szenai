@@ -1,7 +1,27 @@
-
 import React from 'react';
+import { DashboardLayout } from './DashboardPage';
 import { 
-  BarChart, 
+  BarChart2, 
+  Download, 
+  Calendar, 
+  ArrowUpRight, 
+  ArrowDownRight,
+  Users, 
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  Zap,
+  BarChart,
+  LineChart,
+  PieChart
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  BarChart as BarChartRecharts,
   Bar, 
   XAxis, 
   YAxis, 
@@ -9,52 +29,17 @@ import {
   Tooltip, 
   Legend, 
   ResponsiveContainer,
-  LineChart,
+  LineChart as LineChartRecharts,
   Line,
-  PieChart,
+  PieChart as PieChartRecharts,
   Pie,
   Cell,
-  AreaChart,
+  AreaChart as AreaChartRecharts,
   Area
 } from 'recharts';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowUpRight, 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
-  Download, 
-  MessageSquare, 
-  Users, 
-  Clock,
-  BarChart2,
-  PieChart as PieChartIcon,
-  Activity
-} from 'lucide-react';
 
-// Sample data for charts
+
+// Sample data for charts (from original code)
 const chatActivity = [
   { name: 'Sen', WhatsApp: 40, Instagram: 24, WebChat: 10 },
   { name: 'Sel', WhatsApp: 30, Instagram: 13, WebChat: 15 },
@@ -99,451 +84,358 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const AnalyticsPage: React.FC = () => {
   return (
-    <div className="p-4 md:p-6">
-      <div className="flex flex-col gap-2 mb-6">
-        <h1 className="text-2xl font-bold">Statistik</h1>
-        <p className="text-gray-500 dark:text-gray-400">Analisis performa chatbot, konversi, dan aktivitas pengguna</p>
-      </div>
-      
-      {/* Time range selector and export button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-gray-500" />
-          <Select defaultValue="30d">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Pilih rentang waktu" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">7 hari terakhir</SelectItem>
-              <SelectItem value="30d">30 hari terakhir</SelectItem>
-              <SelectItem value="90d">90 hari terakhir</SelectItem>
-              <SelectItem value="custom">Kustom...</SelectItem>
-            </SelectContent>
-          </Select>
+    <DashboardLayout>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Statistik</h1>
+          <p className="text-gray-500 dark:text-gray-400">Analisis performa chatbot, konversi, dan aktivitas pengguna</p>
         </div>
-        
-        <Button variant="outline" size="sm" className="text-xs">
-          <Download className="h-3.5 w-3.5 mr-1.5" />
-          Export Data
-        </Button>
-      </div>
-      
-      {/* Key metrics cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          { 
-            title: 'Total Percakapan', 
-            value: '1,265', 
-            change: '+12.5%', 
-            isPositive: true,
-            icon: <MessageSquare className="h-4 w-4 text-blue-600" />
-          },
-          { 
-            title: 'Total Leads', 
-            value: '387', 
-            change: '+8.2%', 
-            isPositive: true,
-            icon: <Users className="h-4 w-4 text-green-600" />
-          },
-          { 
-            title: 'Konversi Rata-rata', 
-            value: '28.3%', 
-            change: '+3.7%', 
-            isPositive: true,
-            icon: <TrendingUp className="h-4 w-4 text-purple-600" />
-          },
-          { 
-            title: 'Waktu Respons', 
-            value: '1.8 menit', 
-            change: '-14.3%', 
-            isPositive: true,
-            icon: <Clock className="h-4 w-4 text-orange-600" />
-          },
-        ].map((metric, index) => (
-          <Card key={index} className="dark:border-gray-800 dark:bg-gray-900">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {metric.title}
-              </CardTitle>
-              <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
-                {metric.icon}
+
+        {/* Time range selector and export button */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <Select defaultValue="30d">
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Pilih rentang waktu" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">7 hari terakhir</SelectItem>
+                <SelectItem value="30d">30 hari terakhir</SelectItem>
+                <SelectItem value="90d">90 hari terakhir</SelectItem>
+                <SelectItem value="custom">Kustom...</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button variant="outline" size="sm" className="text-xs">
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Export Data
+          </Button>
+        </div>
+
+        {/* Key metrics cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {[
+            { 
+              title: 'Total Percakapan', 
+              value: '1,265',
+              change: '+15%',
+              isPositive: true,
+              icon: <MessageSquare className="h-5 w-5 text-blue-600" />
+            },
+            { 
+              title: 'Rata-rata Waktu Respons', 
+              value: '2.4 menit',
+              change: '-8%',
+              isPositive: true,
+              icon: <Clock className="h-5 w-5 text-green-600" />
+            },
+            { 
+              title: 'Tingkat Konversi', 
+              value: '32%',
+              change: '+5%',
+              isPositive: true,
+              icon: <CheckCircle className="h-5 w-5 text-purple-600" />
+            },
+            { 
+              title: 'Leads Baru', 
+              value: '187',
+              change: '-3%',
+              isPositive: false,
+              icon: <Users className="h-5 w-5 text-orange-600" />
+            }
+          ].map((metric, index) => (
+            <Card key={index} className="dark:border-gray-800 dark:bg-gray-900">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {metric.title}
+                </CardTitle>
+                <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
+                  {metric.icon}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metric.value}</div>
+                <div className="flex items-center mt-1">
+                  <span className={`text-xs font-medium flex items-center ${metric.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                    {metric.isPositive ? (
+                      <ArrowUpRight className="h-3 w-3 mr-1" />
+                    ) : (
+                      <ArrowDownRight className="h-3 w-3 mr-1" />
+                    )}
+                    {metric.change}
+                  </span>
+                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                    vs bulan lalu
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Chart tabs */}
+        <Card className="dark:border-gray-800 dark:bg-gray-900">
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <CardTitle>Analisis Performa</CardTitle>
+                <CardDescription>Metrik utama chatbot dan konversi</CardDescription>
               </div>
+              <div className="flex gap-2">
+                <Tabs defaultValue="leads">
+                  <TabsList>
+                    <TabsTrigger value="leads" className="text-xs">
+                      <Users className="h-3.5 w-3.5 mr-1.5" />
+                      Leads
+                    </TabsTrigger>
+                    <TabsTrigger value="chats" className="text-xs">
+                      <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                      Chat
+                    </TabsTrigger>
+                    <TabsTrigger value="response" className="text-xs">
+                      <Zap className="h-3.5 w-3.5 mr-1.5" />
+                      Respons
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 flex items-end gap-2 pt-10">
+              {/* Mock chart for visualization - in real app you'd use a charting library like recharts */}
+              {[35, 42, 58, 63, 47, 75, 68, 82, 73, 62, 55, 70].map((height, index) => (
+                <div key={index} className="relative flex-1 transition-all group">
+                  <div 
+                    className="bg-blue-600 dark:bg-blue-500 rounded-t-sm w-full relative"
+                    style={{ height: `${height}%` }}
+                  >
+                    <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      {height} leads
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
+                    {['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][index]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Channel performance and conversion charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Channel Performance */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart className="h-5 w-5 text-blue-600" />
+                Performa per Saluran
+              </CardTitle>
+              <CardDescription>Analisis saluran komunikasi yang paling efektif</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metric.value}</div>
-              <div className="flex items-center mt-1">
-                <span className={`text-xs font-medium ${metric.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                  {metric.change}
-                </span>
-                <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
-                  vs periode sebelumnya
-                </span>
+              <div className="space-y-4">
+                {[
+                  { channel: 'WhatsApp', value: 45, total: 100 },
+                  { channel: 'Instagram DM', value: 28, total: 100 },
+                  { channel: 'Web Chat', value: 20, total: 100 },
+                  { channel: 'Facebook', value: 7, total: 100 },
+                ].map((item, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{item.channel}</span>
+                      <span className="font-semibold">{item.value}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-600 dark:bg-blue-500 rounded-full" 
+                        style={{ width: `${item.value}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
-      
-      {/* Chart tabs */}
-      <Tabs defaultValue="chat" className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList className="grid grid-cols-3 w-auto">
-            <TabsTrigger value="chat" className="flex items-center gap-1.5">
-              <BarChart2 className="h-4 w-4" />
-              <span>Aktivitas Chat</span>
-            </TabsTrigger>
-            <TabsTrigger value="conversion" className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4" />
-              <span>Konversi</span>
-            </TabsTrigger>
-            <TabsTrigger value="channels" className="flex items-center gap-1.5">
-              <PieChartIcon className="h-4 w-4" />
-              <span>Sumber</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <Select defaultValue="daily">
-            <SelectTrigger className="w-[120px] h-8 text-xs">
-              <SelectValue placeholder="Pilih tampilan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="daily">Harian</SelectItem>
-              <SelectItem value="weekly">Mingguan</SelectItem>
-              <SelectItem value="monthly">Bulanan</SelectItem>
-            </SelectContent>
-          </Select>
+
+          {/* Conversion Funnel */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LineChart className="h-5 w-5 text-blue-600" />
+                Funnel Konversi
+              </CardTitle>
+              <CardDescription>Customer journey dari awal hingga konversi</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1 mt-2">
+                {[
+                  { stage: 'Visitor', count: 2780, color: 'bg-gray-300 dark:bg-gray-600' },
+                  { stage: 'Lead', count: 1375, color: 'bg-blue-300 dark:bg-blue-700' },
+                  { stage: 'Qualified', count: 843, color: 'bg-purple-300 dark:bg-purple-700' },
+                  { stage: 'Proposal', count: 492, color: 'bg-orange-300 dark:bg-orange-700' },
+                  { stage: 'Customer', count: 187, color: 'bg-green-300 dark:bg-green-700' },
+                ].map((stage, index, array) => {
+                  const widthPercentage = (stage.count / array[0].count) * 100;
+                  return (
+                    <div key={index} className="pb-2">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>{stage.stage}</span>
+                        <span className="font-semibold">{stage.count.toLocaleString()}</span>
+                      </div>
+                      <div className={`h-8 ${stage.color} rounded-lg transition-all duration-500`} style={{ width: `${widthPercentage}%` }}></div>
+                      {index < array.length - 1 && (
+                        <div className="flex justify-center text-xs text-gray-500 my-1">
+                          {((array[index + 1].count / stage.count) * 100).toFixed(1)}% →
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        
-        <Card className="dark:border-gray-800 dark:bg-gray-900">
-          <TabsContent value="chat" className="mt-0">
+
+        {/* User activity and chatbot stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Chat Topics */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
             <CardHeader>
-              <CardTitle>Aktivitas Chat Harian</CardTitle>
-              <CardDescription>
-                Volume percakapan di semua platform
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5 text-blue-600" />
+                Topik Percakapan
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={chatActivity}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1F2937', 
-                        borderColor: '#374151',
-                        color: '#F9FAFB'
-                      }} 
-                    />
-                    <Legend />
-                    <Bar dataKey="WhatsApp" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Instagram" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="WebChat" fill="#10B981" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="aspect-square relative flex items-center justify-center">
+                {/* Mock donut chart */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-3/4 h-3/4 rounded-full overflow-hidden">
+                    <div className="absolute inset-0 bg-blue-500" style={{ clipPath: 'polygon(50% 50%, 0 0, 50% 0, 100% 0, 100% 100%, 50% 100%, 0 100%, 0 50%)' }}></div>
+                    <div className="absolute inset-0 bg-green-500" style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 50%)' }}></div>
+                    <div className="absolute inset-0 bg-purple-500" style={{ clipPath: 'polygon(50% 50%, 100% 50%, 100% 100%)' }}></div>
+                    <div className="absolute inset-0 bg-orange-500" style={{ clipPath: 'polygon(50% 50%, 0 100%, 0 70%)' }}></div>
+                    <div className="absolute inset-0 bg-yellow-500" style={{ clipPath: 'polygon(50% 50%, 0 50%, 0 0)' }}></div>
+                    <div className="absolute inset-0 bg-white dark:bg-gray-900 rounded-full" style={{ transform: 'scale(0.65)' }}></div>
+                  </div>
+                </div>
+
+                <div className="z-10 text-center">
+                  <div className="text-xl font-bold">1,265</div>
+                  <div className="text-xs text-gray-500">Total Percakapan</div>
+                </div>
               </div>
-            </CardContent>
-          </TabsContent>
-          
-          <TabsContent value="conversion" className="mt-0">
-            <CardHeader>
-              <CardTitle>Tingkat Konversi</CardTitle>
-              <CardDescription>
-                Persentase pelanggan yang melakukan pembelian
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={conversionRateData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1F2937', 
-                        borderColor: '#374151',
-                        color: '#F9FAFB'
-                      }} 
-                      formatter={(value) => [`${value}%`, 'Konversi']}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="rate" 
-                      stroke="#3B82F6" 
-                      fill="url(#colorUv)" 
-                      strokeWidth={2} 
-                    />
-                    <defs>
-                      <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                      </linearGradient>
-                    </defs>
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </TabsContent>
-          
-          <TabsContent value="channels" className="mt-0">
-            <CardHeader>
-              <CardTitle>Distribusi Sumber Lead</CardTitle>
-              <CardDescription>
-                Persentase lead berdasarkan saluran komunikasi
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col md:flex-row justify-around items-center">
-              <div className="w-full max-w-xs h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={leadSourceData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={90}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {leadSourceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1F2937', 
-                        borderColor: '#374151',
-                        color: '#F9FAFB'
-                      }} 
-                      formatter={(value) => [`${value}%`, 'Persentase']}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              
-              <div className="space-y-4 mt-4 md:mt-0">
-                {leadSourceData.map((item, index) => (
+
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {[
+                  { label: 'Harga & Paket', color: 'bg-blue-500', percentage: '35%' },
+                  { label: 'Fitur Produk', color: 'bg-green-500', percentage: '28%' },
+                  { label: 'Dukungan Teknis', color: 'bg-purple-500', percentage: '20%' },
+                  { label: 'Pertanyaan Umum', color: 'bg-orange-500', percentage: '12%' },
+                  { label: 'Lainnya', color: 'bg-yellow-500', percentage: '5%' },
+                ].map((topic, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    ></div>
-                    <span className="text-sm">{item.name}</span>
-                    <span className="text-sm font-medium">{item.value}%</span>
+                    <div className={`w-3 h-3 rounded-full ${topic.color}`}></div>
+                    <div className="text-xs">
+                      <span className="mr-1">{topic.label}</span>
+                      <span className="text-gray-500">{topic.percentage}</span>
+                    </div>
                   </div>
                 ))}
-                <div className="pt-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    <strong className="text-blue-600">WhatsApp</strong> adalah sumber lead terbanyak dalam periode ini.
-                  </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Peak Hours */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-blue-600" />
+                Jam Sibuk
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-12 gap-1 h-60">
+                {[10, 15, 25, 30, 35, 45, 65, 80, 75, 70, 60, 50, 55, 65, 70, 60, 50, 40, 35, 30, 20, 15, 10, 5].map((height, index) => (
+                  <div key={index} className="flex flex-col items-center justify-end h-full">
+                    <div 
+                      className="w-full bg-blue-500 rounded-t-sm"
+                      style={{ height: `${height}%` }}
+                    ></div>
+                    <div className="text-[10px] text-gray-500 mt-1">
+                      {index.toString().padStart(2, '0')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center mt-6">
+                <Badge className="bg-blue-600">Jam Ramai: 10:00 - 14:00</Badge>
+                <span className="text-sm text-gray-500">UTC+7</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Chatbot Stats */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-blue-600" />
+                Performa Chatbot
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {[
+                  { 
+                    label: 'Akurasi Jawaban', 
+                    value: 92,
+                    description: 'Berdasarkan umpan balik pengguna' 
+                  },
+                  { 
+                    label: 'Respons Tanpa Bantuan Manusia', 
+                    value: 78,
+                    description: 'Persentase chat yang ditangani 100% oleh bot' 
+                  },
+                  { 
+                    label: 'Kepuasan Pengguna', 
+                    value: 85,
+                    description: 'Rating rata-rata dari pengguna' 
+                  },
+                ].map((stat, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between">
+                      <div className="text-sm font-medium">{stat.label}</div>
+                      <div className="text-sm font-semibold">{stat.value}%</div>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500" 
+                        style={{ width: `${stat.value}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-gray-500">{stat.description}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 pt-4 border-t dark:border-gray-800">
+                <div className="flex justify-between items-center">
+                  <div className="text-sm font-medium">Total kata AI yang digunakan</div>
+                  <Badge variant="outline">6,243 / 10,000</Badge>
+                </div>
+                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mt-2">
+                  <div className="h-full bg-blue-600 dark:bg-blue-500 rounded-full" style={{ width: '62.4%' }}></div>
                 </div>
               </div>
             </CardContent>
-          </TabsContent>
-        </Card>
-      </Tabs>
-      
-      {/* Additional charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="dark:border-gray-800 dark:bg-gray-900">
-          <CardHeader>
-            <CardTitle>Waktu Respons Rata-rata</CardTitle>
-            <CardDescription>
-              Waktu yang dibutuhkan untuk merespon pesan (dalam menit)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={responseTimeData}
-                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="name" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1F2937', 
-                      borderColor: '#374151',
-                      color: '#F9FAFB'
-                    }} 
-                    formatter={(value) => [`${value} menit`, 'Waktu Respons']}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="time" 
-                    stroke="#10B981" 
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t dark:border-gray-800 pt-4">
-            <div className="w-full flex justify-between items-center">
-              <div className="flex items-center gap-1.5">
-                <Activity className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">Menurun 14.3%</span>
-              </div>
-              <Badge variant="outline" className="font-normal">
-                Sangat Baik
-              </Badge>
-            </div>
-          </CardFooter>
-        </Card>
-        
-        <Card className="dark:border-gray-800 dark:bg-gray-900">
-          <CardHeader>
-            <CardTitle>Efektivitas FAQ</CardTitle>
-            <CardDescription>
-              Persentase pertanyaan yang dijawab oleh chatbot vs agen manusia
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: 'Dijawab oleh AI', value: 78 },
-                      { name: 'Eskalasi ke Manusia', value: 22 }
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  >
-                    <Cell fill="#3B82F6" />
-                    <Cell fill="#F59E0B" />
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1F2937', 
-                      borderColor: '#374151',
-                      color: '#F9FAFB'
-                    }} 
-                    formatter={(value) => [`${value}%`, 'Persentase']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t dark:border-gray-800 pt-4">
-            <div className="w-full flex justify-between items-center">
-              <div className="flex items-center gap-1.5">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">Meningkat 5% dari bulan lalu</span>
-              </div>
-              <Button size="sm" variant="outline" className="text-xs">
-                Lihat FAQ
-              </Button>
-            </div>
-          </CardFooter>
-        </Card>
+          </Card>
+        </div>
       </div>
-      
-      {/* Top performing content */}
-      <Card className="dark:border-gray-800 dark:bg-gray-900 mb-6">
-        <CardHeader>
-          <CardTitle>Pertanyaan Paling Sering</CardTitle>
-          <CardDescription>
-            Pertanyaan yang paling sering diajukan pelanggan
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { question: 'Berapa harga paket bulanan?', count: 245, growth: 12 },
-              { question: 'Apakah bisa diintegrasikan dengan Shopee?', count: 189, growth: 28 },
-              { question: 'Bagaimana cara mengatur auto-responder?', count: 156, growth: -5 },
-              { question: 'Apakah ada fitur untuk mengelola stok?', count: 132, growth: 8 },
-              { question: 'Bisakah saya mencoba gratis terlebih dahulu?', count: 118, growth: 15 },
-            ].map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg border dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-600/10 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">
-                    {index + 1}
-                  </div>
-                  <span className="font-medium">{item.question}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="font-normal">
-                    {item.count} kali
-                  </Badge>
-                  <div className={`flex items-center gap-1 ${item.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {item.growth >= 0 ? (
-                      <TrendingUp className="h-3.5 w-3.5" />
-                    ) : (
-                      <TrendingDown className="h-3.5 w-3.5" />
-                    )}
-                    <span className="text-xs font-medium">{Math.abs(item.growth)}%</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Analytics insights */}
-      <Card className="dark:border-gray-800 dark:bg-gray-900">
-        <CardHeader>
-          <CardTitle>Insight Analytics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { 
-                title: 'Waktu respons menurun signifikan', 
-                description: 'Waktu respons rata-rata menurun 14.3% dibandingkan periode sebelumnya. Ini menunjukkan peningkatan efisiensi chatbot.',
-                action: 'Pertahankan',
-                color: 'text-green-600 bg-green-600/10'
-              },
-              { 
-                title: 'Sumber lead dari Instagram meningkat', 
-                description: 'Lead dari Instagram naik 28% bulan ini. Pertimbangkan untuk mengalokasikan lebih banyak resource untuk platform ini.',
-                action: 'Tingkatkan',
-                color: 'text-blue-600 bg-blue-600/10'
-              },
-              { 
-                title: 'Pertanyaan teknis membutuhkan eskalasi', 
-                description: '62% pertanyaan yang diteruskan ke agen manusia adalah pertanyaan teknis. Pertimbangkan untuk meningkatkan pelatihan AI di area ini.',
-                action: 'Perhatikan',
-                color: 'text-amber-600 bg-amber-600/10'
-              },
-            ].map((insight, index) => (
-              <div key={index} className="flex gap-4">
-                <div className={`${insight.color} p-2 rounded-full h-fit`}>
-                  <ArrowUpRight className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-medium mb-1">{insight.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{insight.description}</p>
-                  <Badge variant="outline" className={insight.color.split(' ')[0]}>
-                    {insight.action}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </DashboardLayout>
   );
 };
 
