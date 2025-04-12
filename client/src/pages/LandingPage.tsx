@@ -1,7 +1,7 @@
 
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2 } from "lucide-react";
+import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2, Bot } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -15,10 +15,10 @@ export default function LandingPage() {
             </span>
           </Link>
           <div className="hidden md:flex space-x-8 text-gray-300">
-            <Link href="/fitur">Fitur</Link>
-            <Link href="/cara-kerja">Cara Kerja</Link>
-            <Link href="/success-stories">Testimoni</Link>
-            <Link href="/kontak">Kontak</Link>
+            <a href="#features">Fitur</a>
+            <a href="#how-it-works">Cara Kerja</a>
+            <a href="#success-stories">Testimoni</a>
+            <a href="#contact">Kontak</a>
           </div>
           <Button size="lg" variant="secondary" className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20" asChild>
             <Link href="/daftar">Coba Gratis</Link>
@@ -40,8 +40,8 @@ export default function LandingPage() {
             <Button size="lg" className="bg-blue-600 hover:bg-blue-500 rounded-xl text-lg px-8 shadow-lg shadow-blue-500/20" asChild>
               <Link href="/login">Coba Gratis 14 Hari <ArrowRight className="ml-2" /></Link>
             </Button>
-            <Button variant="outline" size="lg" className="rounded-xl text-lg px-8 border-blue-500/50 hover:bg-blue-950/50" asChild>
-              <Link href="/success-stories">Lihat Demo</Link>
+            <Button variant="outline" size="lg" className="rounded-xl text-lg px-8 border-blue-500/50 hover:bg-blue-950/50">
+              <a href="#success-stories">Lihat Demo</a>
             </Button>
           </div>
         </div>
@@ -67,42 +67,91 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Problems Section */}
-      <section className="py-20">
+      {/* Features Section */}
+      <section id="features" className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Masalah UMKM yang Kami Selesaikan</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Fitur Lengkap untuk Otomatisasi Bisnis</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "Leads Terlewat", desc: "Chat yang tidak dibalas cepat = pelanggan yang hilang", icon: Clock },
-              { title: "CS Kewalahan", desc: "Tim support butuh istirahat, tapi pelanggan tetap butuh respon", icon: Users },
-              { title: "Data Berantakan", desc: "Histori chat tercecer di berbagai platform tanpa dokumentasi", icon: Database }
-            ].map((problem, i) => (
-              <div key={i} className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40 transition-all hover:transform hover:scale-105">
-                <problem.icon className="w-10 h-10 text-blue-400 mb-6" />
-                <h3 className="text-xl font-bold mb-4">{problem.title}</h3>
-                <p className="text-gray-400">{problem.desc}</p>
+              {
+                icon: MessageSquare,
+                title: "Respon Otomatis 24/7",
+                desc: "Balas chat WhatsApp & Instagram DM secara instan dengan AI yang mengerti konteks bisnis Anda"
+              },
+              {
+                icon: Database,
+                title: "CRM Terintegrasi",
+                desc: "Simpan dan kelola semua histori chat dalam satu dashboard yang mudah diakses"
+              },
+              {
+                icon: Zap,
+                title: "Follow-up Otomatis",
+                desc: "AI yang proaktif menindaklanjuti leads dan membantu proses closing"
+              },
+              {
+                icon: Share2,
+                title: "Integrasi Multi-Platform",
+                desc: "Hubungkan dengan tools bisnis favorit Anda: Notion, Sheets, dan lainnya"
+              },
+              {
+                icon: Shield,
+                title: "Keamanan Data",
+                desc: "Data pelanggan Anda aman dengan enkripsi end-to-end"
+              },
+              {
+                icon: BarChart,
+                title: "Analisis Performa",
+                desc: "Pantau metrics penting: response time dan conversion rate"
+              }
+            ].map((feature, i) => (
+              <div key={i} className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40 transition-all">
+                <feature.icon className="w-12 h-12 text-blue-400 mb-6" />
+                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
+                <p className="text-gray-400">{feature.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-[#0f172a]/50 border-y border-blue-900/30">
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 bg-[#0f172a]/50 border-y border-blue-900/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Solusi Zenith AI</h2>
-          <div className="space-y-8">
-            {[
-              { title: "Balas Otomatis 24/7", desc: "WhatsApp & Instagram DM terintegrasi dengan AI pintar", icon: MessageSquare },
-              { title: "CRM Terintegrasi", desc: "Simpan dan kelola semua histori chat dalam satu dashboard", icon: Database },
-              { title: "Follow-up Otomatis", desc: "AI yang aktif mencari peluang dan menindaklanjuti leads", icon: Zap },
-              { title: "Integrasi Tool Bisnis", desc: "Hubungkan dengan Notion, Sheets, dan aplikasi bisnis lainnya", icon: Share2 }
-            ].map((feature, i) => (
-              <div key={i} className="flex flex-col md:flex-row items-center gap-8 p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40">
-                <feature.icon className="w-12 h-12 text-blue-400" />
-                <div>
-                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className="text-gray-400">{feature.desc}</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Bagaimana Zenith AI Bekerja</h2>
+          <div className="space-y-16">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-full md:w-1/2">
+                <Bot className="w-16 h-16 text-blue-400 mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Training AI</h3>
+                <p className="text-gray-400">
+                  AI kami dilatih dengan data bisnis Anda untuk memberikan respons yang akurat dan personal
+                </p>
+              </div>
+              <div className="w-full md:w-1/2">
+                <img src="https://placehold.co/600x400/1e293b/white" alt="Training" className="rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Stories Section */}
+      <section id="success-stories" className="py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Kisah Sukses Pengguna</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((_, i) => (
+              <div key={i} className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20">
+                <div className="text-blue-400 mb-4">★★★★★</div>
+                <p className="text-gray-400 mb-6">
+                  "Zenith AI membantu bisnis kami menghemat waktu dan resources dengan otomatisasi chat yang pintar."
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-900 rounded-full"></div>
+                  <div>
+                    <div className="font-bold">Nama Pengguna</div>
+                    <div className="text-gray-400">Posisi, Perusahaan</div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -110,17 +159,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24">
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-[#0f172a]/50 border-y border-blue-900/30">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Jangan Biarkan Pelanggan Menunggu
+            Siap Meningkatkan Performa Bisnis Anda?
           </h2>
           <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            Mulai tingkatkan penjualan bisnis Anda dengan Zenith AI hari ini. Gratis 14 hari, tanpa kartu kredit.
+            Mulai gratis 14 hari. Tanpa kartu kredit.
           </p>
           <Button size="lg" className="bg-blue-600 hover:bg-blue-500 rounded-xl text-lg px-8 shadow-lg shadow-blue-500/20" asChild>
-            <Link href="/daftar">Coba Gratis Sekarang <ArrowRight className="ml-2" /></Link>
+            <Link href="/daftar">Mulai Sekarang <ArrowRight className="ml-2" /></Link>
           </Button>
         </div>
       </section>
@@ -136,24 +185,24 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold text-white mb-4">Produk</h4>
               <div className="space-y-2">
-                <Link href="/fitur"><div className="hover:text-white">Fitur</div></Link>
-                <Link href="/cara-kerja"><div className="hover:text-white">Cara Kerja</div></Link>
-                <Link href="/harga"><div className="hover:text-white">Harga</div></Link>
+                <a href="#features" className="block hover:text-white">Fitur</a>
+                <a href="#how-it-works" className="block hover:text-white">Cara Kerja</a>
+                <Link href="/harga" className="block hover:text-white">Harga</Link>
               </div>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">Perusahaan</h4>
               <div className="space-y-2">
-                <Link href="/tentang-kami"><div className="hover:text-white">Tentang Kami</div></Link>
-                <Link href="/partnerships"><div className="hover:text-white">Partnership</div></Link>
-                <Link href="/kontak"><div className="hover:text-white">Kontak</div></Link>
+                <Link href="/tentang-kami" className="block hover:text-white">Tentang Kami</Link>
+                <Link href="/partnerships" className="block hover:text-white">Partnership</Link>
+                <a href="#contact" className="block hover:text-white">Kontak</a>
               </div>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">Legal</h4>
               <div className="space-y-2">
-                <Link href="/kebijakan-privasi"><div className="hover:text-white">Kebijakan Privasi</div></Link>
-                <Link href="/syarat-ketentuan"><div className="hover:text-white">Syarat & Ketentuan</div></Link>
+                <Link href="/kebijakan-privasi" className="block hover:text-white">Kebijakan Privasi</Link>
+                <Link href="/syarat-ketentuan" className="block hover:text-white">Syarat & Ketentuan</Link>
               </div>
             </div>
           </div>

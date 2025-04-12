@@ -7,10 +7,6 @@ import LoginPage from "./pages/LoginPage";
 import ChatPage from "./pages/ChatPage";
 import LandingPage from "./pages/LandingPage";
 import DashboardPage from "./pages/DashboardPage";
-import FiturPage from "./pages/FiturPage";
-import CaraKerjaPage from "./pages/CaraKerjaPage";
-import SuccessStoriesPage from "./pages/SuccessStoriesPage";
-import KontakPage from "./pages/KontakPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useEffect } from "react";
 
@@ -33,9 +29,6 @@ const ProtectedRoute = ({ component: Component }: { component: React.FC }) => {
 };
 
 function Router() {
-  // We're not auto-redirecting anymore to allow the landing page to be visible
-  const { user } = useAuth();
-
   return (
     <Switch>
       <Route path="/login" component={LoginPage} />
@@ -45,10 +38,6 @@ function Router() {
       <Route path="/dashboard">
         <ProtectedRoute component={DashboardPage} />
       </Route>
-      <Route path="/fitur" component={FiturPage} />
-      <Route path="/cara-kerja" component={CaraKerjaPage} />
-      <Route path="/success-stories" component={SuccessStoriesPage} />
-      <Route path="/kontak" component={KontakPage} />
       <Route path="/" component={LandingPage} />
       <Route component={NotFound} />
     </Switch>
