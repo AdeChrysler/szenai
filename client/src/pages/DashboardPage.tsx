@@ -689,7 +689,6 @@ const DashboardPage: React.FC = () => {
                   variant="outline" 
                   className="w-full border-blue-600 text-blue-600 hover:bg-blue-600/10 dark:border-blue-500 dark:text-blue-500 transition-all hover:scale-[1.02]"
                 >
-                >
                   Kelola Integrasi
                 </Button>
               </Link>
