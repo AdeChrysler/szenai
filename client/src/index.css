@@ -157,50 +157,9 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.2);
 }
 
-/* Dashboard card styles with subtle animations */
+/* Dashboard card styles without animations */
 .dashboard-card {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-color: rgba(59, 130, 246, 0.5);
-}
-
-/* Gradient accents */
-.accent-gradient {
-  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-}
-
-.dark-gradient {
-  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-}
-
-/* Improve layout spacing */
-.content-section {
-  margin-bottom: 1.5rem;
-}
-
-/* Improved scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.7);
 }
 
 /* Table row hover effect without animation */
