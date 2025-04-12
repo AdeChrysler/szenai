@@ -1,7 +1,7 @@
 
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2, Bot, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2, Bot, Check, ChevronDown, ChevronUp, ArrowUpRight, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -9,14 +9,20 @@ export default function LandingPage() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
+  const [navBackground, setNavBackground] = useState(false);
   const prevScrollY = useRef(0);
+  const demoRef = useRef<HTMLDivElement>(null);
 
-  // For header visibility control based on scroll direction
+  // For header visibility and background control based on scroll
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrollY(currentScrollY);
       
+      // Set background style when scrolled past 100px
+      setNavBackground(currentScrollY > 100);
+      
+      // Hide header when scrolling down, show when scrolling up, but only after 100px
       if (currentScrollY > 100) {
         setIsHeaderVisible(prevScrollY.current > currentScrollY);
       } else {
@@ -30,13 +36,32 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Smooth scroll function
+  // Enhanced smooth scroll function with offset for floating header
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
+    const headerOffset = 100; // Offset for the floating header
+    
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+  
+  // Scroll to demo section
+  const scrollToDemo = () => {
+    if (demoRef.current) {
+      const headerOffset = 100;
+      const elementPosition = demoRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
       });
     }
   };
@@ -106,62 +131,134 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#020617] text-white">
-      {/* Floating Nav */}
+      {/* Premium Floating Nav */}
       <nav 
         className={cn(
-          "fixed top-0 left-0 right-0 backdrop-blur-lg z-50 transition-all duration-300",
-          isHeaderVisible 
-            ? "transform translate-y-0 shadow-lg shadow-blue-900/20 border-b border-blue-900/30" 
-            : "transform -translate-y-full"
+          "floating-nav transition-all duration-500",
+          isHeaderVisible ? "translate-y-0" : "-translate-y-24",
+          navBackground ? "scrolled" : ""
         )}
       >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center justify-between h-14">
           <Link href="/">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              Zenith AI
-            </span>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center animate-pulse-subtle">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
+                Zenith AI
+              </span>
+            </div>
           </Link>
-          <div className="hidden md:flex space-x-8 text-gray-300">
-            <button onClick={() => scrollToSection('features')} className="hover:text-blue-400 transition-colors">Fitur</button>
-            <button onClick={() => scrollToSection('how-it-works')} className="hover:text-blue-400 transition-colors">Cara Kerja</button>
-            <button onClick={() => scrollToSection('testimonials')} className="hover:text-blue-400 transition-colors">Testimoni</button>
-            <button onClick={() => scrollToSection('faq')} className="hover:text-blue-400 transition-colors">FAQ</button>
-            <button onClick={() => scrollToSection('contact')} className="hover:text-blue-400 transition-colors">Kontak</button>
+          
+          <div className="hidden md:flex space-x-1">
+            {[
+              { name: 'Fitur', id: 'features' },
+              { name: 'Cara Kerja', id: 'how-it-works' },
+              { name: 'Testimoni', id: 'testimonials' },
+              { name: 'FAQ', id: 'faq' },
+              { name: 'Kontak', id: 'contact' }
+            ].map((item) => (
+              <button 
+                key={item.id}
+                onClick={() => scrollToSection(item.id)} 
+                className="px-4 py-1.5 text-sm text-gray-300 hover:text-white rounded-full transition-all duration-300 hover:bg-blue-800/30"
+              >
+                {item.name}
+              </button>
+            ))}
           </div>
-          <Button size="lg" variant="secondary" className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20" asChild>
-            <Link href="/daftar">Coba Gratis</Link>
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-blue-400 hover:text-blue-300 hover:bg-blue-950/50 rounded-full px-4"
+              asChild
+            >
+              <Link href="/login">Masuk</Link>
+            </Button>
+            <Button 
+              className="premium-button text-white text-sm px-5 py-5 h-9"
+              asChild
+            >
+              <Link href="/daftar">
+                Coba Gratis <ArrowUpRight className="w-4 h-4 ml-1" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="py-24 px-4 pt-32">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+      <section className="py-32 px-4 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-[20%] w-64 h-64 rounded-full bg-blue-600/20 blur-[100px]"></div>
+          <div className="absolute bottom-20 right-[20%] w-96 h-96 rounded-full bg-blue-400/20 blur-[120px]"></div>
+        </div>
+        
+        <div className="container mx-auto text-center max-w-4xl relative z-10">
+          <div className="inline-block mb-4 animate-float">
+            <div className="px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-sm text-blue-300 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+              Teknologi AI Generasi Terbaru
+            </div>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight animate-fade-in" style={{animationDelay: '0.2s'}}>
             AI Chatbot untuk Mengubah Chat Jadi 
-            <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent"> Closing</span>
+            <div className="inline-block relative">
+              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent relative z-10"> Closing</span>
+              <div className="absolute -bottom-2 left-1 right-1 h-1 bg-gradient-to-r from-blue-400/40 to-blue-600/40 blur-sm"></div>
+            </div>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-400 mb-12">
-            Zenith AI bantu Anda membalas chat WhatsApp & DM 24 jam nonstop, kumpulkan leads, dan bantu closing otomatis.
+          
+          <p className="text-xl md:text-2xl text-gray-300 mb-12 animate-fade-in" style={{animationDelay: '0.4s'}}>
+            Zenith AI bantu Anda membalas chat WhatsApp & DM <span className="text-blue-300">24 jam nonstop</span>, 
+            kumpulkan leads, dan bantu closing otomatis.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-500 rounded-xl text-lg px-8 shadow-lg shadow-blue-500/20" asChild>
-              <Link href="/login">Coba Gratis 14 Hari <ArrowRight className="ml-2" /></Link>
+          
+          <div className="flex gap-4 justify-center flex-wrap animate-fade-in" style={{animationDelay: '0.6s'}}>
+            <Button 
+              size="lg" 
+              className="premium-button h-14 text-lg px-8 font-medium" 
+              asChild
+            >
+              <Link href="/login">
+                Coba Gratis 14 Hari 
+                <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
+              </Link>
             </Button>
+            
             <Button 
               variant="outline" 
               size="lg" 
-              className="rounded-xl text-lg px-8 border-blue-500/50 hover:bg-blue-950/50"
-              onClick={() => scrollToSection('testimonials')}
+              className="h-14 rounded-full text-lg px-8 border-blue-500/30 hover:border-blue-400/60 bg-blue-950/30 hover:bg-blue-900/40 text-gray-200 backdrop-blur-sm"
+              onClick={scrollToDemo}
             >
               Lihat Demo
             </Button>
           </div>
+          
+          <div className="mt-16 animate-fade-in" style={{animationDelay: '0.8s'}}>
+            <p className="text-sm text-gray-400 mb-3">Dipercaya oleh brand ternama</p>
+            <div className="flex justify-center items-center gap-8 opacity-70">
+              {['Brand 1', 'Brand 2', 'Brand 3', 'Brand 4'].map((brand, i) => (
+                <div key={i} className="text-gray-500 font-semibold text-sm">
+                  {brand}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+        
+        {/* Decorative particle mesh at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#020617] to-transparent pointer-events-none"></div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 border-y border-blue-900/30 bg-[#0f172a]/50">
+      <section className="py-24 border-y border-blue-900/20 bg-gradient-to-b from-[#0c1525] to-[#0f172a]">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             {[
@@ -170,10 +267,18 @@ export default function LandingPage() {
               { value: "250+", label: "Bisnis Aktif", icon: MessageSquare },
               { value: "50+", label: "Mitra Integrator", icon: Share2 }
             ].map((stat, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40 transition-colors">
-                <stat.icon className="w-8 h-8 text-blue-400 mx-auto mb-4" />
-                <div className="text-4xl font-bold text-blue-400 mb-2">{stat.value}</div>
-                <div className="text-gray-400">{stat.label}</div>
+              <div 
+                key={i} 
+                className="premium-card p-8 animate-fade-in"
+                style={{animationDelay: `${0.1 * i}s`}}
+              >
+                <div className="relative z-10">
+                  <div className="w-16 h-16 rounded-full bg-blue-900/30 flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                    <stat.icon className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <div className="text-4xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent mb-3">{stat.value}</div>
+                  <div className="text-gray-300">{stat.label}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -181,9 +286,26 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 scroll-mt-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Fitur Lengkap untuk Otomatisasi Bisnis</h2>
+      <section id="features" className="py-24 scroll-mt-24 relative">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-600/10 blur-[100px]"></div>
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-blue-400/10 blur-[100px]"></div>
+        </div>
+      
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col items-center max-w-2xl mx-auto mb-20 text-center">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-sm text-blue-300 mb-4">
+              Fitur Premium
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Fitur Lengkap untuk Otomatisasi Bisnis
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Solusi all-in-one yang mengubah cara bisnis Anda berinteraksi dengan pelanggan
+            </p>
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -217,10 +339,18 @@ export default function LandingPage() {
                 desc: "Pantau metrics penting: response time dan conversion rate"
               }
             ].map((feature, i) => (
-              <div key={i} className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40 transition-all hover:transform hover:-translate-y-1">
-                <feature.icon className="w-12 h-12 text-blue-400 mb-6" />
-                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                <p className="text-gray-400">{feature.desc}</p>
+              <div 
+                key={i} 
+                className="premium-card group p-8 animate-fade-in"
+                style={{animationDelay: `${0.1 * i}s`}}
+              >
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-800/50 to-blue-600/50 flex items-center justify-center mb-6 border border-blue-500/30 group-hover:animate-pulse-subtle">
+                    <feature.icon className="w-7 h-7 text-blue-300" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-blue-300 transition-colors">{feature.title}</h3>
+                  <p className="text-gray-300">{feature.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -323,28 +453,46 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section with Scroll */}
-      <section id="testimonials" className="py-20 scroll-mt-20">
+      <section id="testimonials" className="py-24 scroll-mt-24" ref={demoRef}>
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Kisah Sukses Pengguna</h2>
+          <div className="flex flex-col items-center max-w-2xl mx-auto mb-20 text-center">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-sm text-blue-300 mb-4">
+              Hasil Nyata
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Kisah Sukses Pengguna
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Lihat bagaimana Zenith AI membantu puluhan bisnis meningkatkan konversi dan efisiensi
+            </p>
+          </div>
           
-          {/* Continuous scroll testimonials */}
-          <div className="relative overflow-hidden py-4 mb-12">
-            <div className="flex animate-[scroll_25s_linear_infinite] gap-6">
+          {/* Continuous scroll testimonials with premium styling */}
+          <div className="relative overflow-hidden py-8 mb-16 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-24 before:bg-gradient-to-r before:from-[#020617] before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-24 after:bg-gradient-to-l after:from-[#020617] after:to-transparent">
+            <div className="flex animate-[scroll_30s_linear_infinite] gap-6">
               {[...testimonials, ...testimonials].map((item, i) => (
                 <div 
                   key={i} 
-                  className="flex-shrink-0 max-w-sm w-80 p-6 rounded-2xl bg-blue-950/30 border border-blue-500/20 hover:border-blue-500/40 transition-all"
+                  className="flex-shrink-0 max-w-sm w-80 p-6 premium-card"
                 >
-                  <div className="text-blue-400 mb-4">★★★★★</div>
-                  <p className="text-gray-400 mb-6">"{item.text}"</p>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-900 rounded-full overflow-hidden">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <div className="relative z-10">
+                    <div className="text-yellow-300 mb-4 flex">
+                      {[...Array(5)].map((_, idx) => (
+                        <svg key={idx} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
                     </div>
-                    <div>
-                      <div className="font-bold">{item.name}</div>
-                      <div className="text-gray-400">{item.position}</div>
-                      <div className="text-gray-500 text-sm">{item.company}</div>
+                    <p className="text-gray-200 mb-6 italic">"{item.text}"</p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-800 to-blue-500 rounded-full overflow-hidden p-0.5">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-full" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-white">{item.name}</div>
+                        <div className="text-blue-300">{item.position}</div>
+                        <div className="text-gray-400 text-sm">{item.company}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -352,63 +500,92 @@ export default function LandingPage() {
             </div>
           </div>
           
-          {/* Featured case studies */}
+          {/* Featured case studies with premium design */}
           <div className="grid md:grid-cols-2 gap-8 mt-12">
-            <div className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20">
-              <div className="flex items-center gap-4 mb-6">
-                <img src="https://placehold.co/100x100/1e293b/white" alt="Company logo" className="w-16 h-16 rounded-lg" />
-                <div>
-                  <h3 className="text-xl font-bold">PT Global Retailindo</h3>
-                  <p className="text-gray-400">Retail & E-commerce</p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex gap-4 items-center">
-                  <div className="w-16 text-center font-bold text-blue-400">3x</div>
-                  <div className="flex-1">
-                    <h4 className="font-bold">Peningkatan Konversi</h4>
-                    <p className="text-gray-400 text-sm">Dari 5% menjadi 15% dalam 2 bulan</p>
+            <div className="premium-card p-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-900 to-blue-700 p-0.5 shadow-lg shadow-blue-900/50">
+                    <img src="https://placehold.co/100x100/1e293b/white" alt="Company logo" className="w-full h-full rounded-lg" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">PT Global Retailindo</h3>
+                    <p className="text-blue-300">Retail & E-commerce</p>
                   </div>
                 </div>
-                <div className="flex gap-4 items-center">
-                  <div className="w-16 text-center font-bold text-blue-400">65%</div>
-                  <div className="flex-1">
-                    <h4 className="font-bold">Pengurangan Biaya CS</h4>
-                    <p className="text-gray-400 text-sm">Tim CS berkurang dari 8 menjadi 3 orang</p>
+                <div className="space-y-6">
+                  <div className="flex gap-6 items-center">
+                    <div className="w-16 text-center font-bold text-3xl bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">3x</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white text-lg">Peningkatan Konversi</h4>
+                      <p className="text-gray-300 text-sm">Dari 5% menjadi 15% dalam 2 bulan</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6 items-center">
+                    <div className="w-16 text-center font-bold text-3xl bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">65%</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white text-lg">Pengurangan Biaya CS</h4>
+                      <p className="text-gray-300 text-sm">Tim CS berkurang dari 8 menjadi 3 orang</p>
+                    </div>
+                  </div>
+                  <div className="bg-blue-950/40 p-4 rounded-xl border border-blue-500/20 mt-6">
+                    <p className="text-gray-200 italic">
+                      "Zenith AI telah mengubah cara kami berinteraksi dengan pelanggan. Kami kini bisa berfokus pada strategi bisnis besar."
+                    </p>
                   </div>
                 </div>
-                <p className="text-gray-300 mt-6">
-                  "Zenith AI telah mengubah cara kami berinteraksi dengan pelanggan. Kami kini bisa berfokus pada strategi bisnis besar."
-                </p>
               </div>
             </div>
             
-            <div className="p-8 rounded-2xl bg-blue-950/30 border border-blue-500/20">
-              <div className="flex items-center gap-4 mb-6">
-                <img src="https://placehold.co/100x100/1e293b/white" alt="Company logo" className="w-16 h-16 rounded-lg" />
-                <div>
-                  <h3 className="text-xl font-bold">Karya Property Group</h3>
-                  <p className="text-gray-400">Real Estate</p>
+            <div className="premium-card p-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-900 to-blue-700 p-0.5 shadow-lg shadow-blue-900/50">
+                    <img src="https://placehold.co/100x100/1e293b/white" alt="Company logo" className="w-full h-full rounded-lg" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Karya Property Group</h3>
+                    <p className="text-blue-300">Real Estate</p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="flex gap-6 items-center">
+                    <div className="w-16 text-center font-bold text-3xl bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">24/7</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white text-lg">Respons Pelanggan</h4>
+                      <p className="text-gray-300 text-sm">Chat direspon dalam 5 detik</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6 items-center">
+                    <div className="w-16 text-center font-bold text-3xl bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">47%</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white text-lg">Peningkatan Lead</h4>
+                      <p className="text-gray-300 text-sm">Lead qualification otomatis</p>
+                    </div>
+                  </div>
+                  <div className="bg-blue-950/40 p-4 rounded-xl border border-blue-500/20 mt-6">
+                    <p className="text-gray-200 italic">
+                      "Property adalah bisnis yang sangat bergantung pada respons cepat. Zenith AI membuat kami unggul dari kompetitor."
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex gap-4 items-center">
-                  <div className="w-16 text-center font-bold text-blue-400">24/7</div>
-                  <div className="flex-1">
-                    <h4 className="font-bold">Respons Pelanggan</h4>
-                    <p className="text-gray-400 text-sm">Chat direspon dalam 5 detik</p>
+            </div>
+          </div>
+          
+          {/* Video or Interactive Demo */}
+          <div className="mt-20 max-w-4xl mx-auto premium-card p-8 animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-6 text-center">Lihat Zenith AI dalam Aksi</h3>
+              <div className="rounded-xl bg-blue-950/50 h-80 flex items-center justify-center border border-blue-500/30 overflow-hidden relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-blue-600/80 flex items-center justify-center animate-pulse-subtle">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    </svg>
                   </div>
                 </div>
-                <div className="flex gap-4 items-center">
-                  <div className="w-16 text-center font-bold text-blue-400">47%</div>
-                  <div className="flex-1">
-                    <h4 className="font-bold">Peningkatan Lead</h4>
-                    <p className="text-gray-400 text-sm">Lead qualification otomatis</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 mt-6">
-                  "Property adalah bisnis yang sangat bergantung pada respons cepat. Zenith AI membuat kami unggul dari kompetitor."
-                </p>
+                <img src="https://placehold.co/800x400/1e293b/white" alt="Demo preview" className="w-full h-full object-cover opacity-50" />
               </div>
             </div>
           </div>
@@ -416,33 +593,47 @@ export default function LandingPage() {
       </section>
       
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-[#0f172a]/50 border-y border-blue-900/30 scroll-mt-20">
+      <section id="faq" className="py-24 bg-gradient-to-b from-[#0c1525] to-[#0f172a] border-y border-blue-900/20 scroll-mt-24">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Pertanyaan yang Sering Diajukan</h2>
+          <div className="flex flex-col items-center max-w-2xl mx-auto mb-20 text-center">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-sm text-blue-300 mb-4">
+              FAQ
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Pertanyaan yang Sering Diajukan
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Jawaban untuk pertanyaan umum tentang Zenith AI
+            </p>
+          </div>
           
           <div className="max-w-3xl mx-auto">
             {faqItems.map((item, index) => (
               <div 
                 key={index} 
-                className="mb-4 border border-blue-900/30 rounded-xl overflow-hidden"
+                className="mb-5 border border-blue-900/20 rounded-xl overflow-hidden glass-effect animate-fade-in"
+                style={{animationDelay: `${0.1 * index}s`}}
               >
                 <button
-                  className="w-full p-6 text-left flex items-center justify-between focus:outline-none"
+                  className="w-full px-8 py-6 text-left flex items-center justify-between focus:outline-none transition-colors hover:bg-blue-900/10"
                   onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
                 >
-                  <h3 className="text-xl font-medium">{item.question}</h3>
-                  {activeAccordion === index ? (
-                    <ChevronUp className="w-5 h-5 text-blue-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-blue-400" />
-                  )}
+                  <h3 className="text-xl font-medium text-white">{item.question}</h3>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-blue-900/50 border border-blue-500/30 transition-transform duration-300 ${
+                    activeAccordion === index ? 'rotate-180' : ''
+                  }`}>
+                    <ChevronDown className="w-5 h-5 text-blue-300" />
+                  </div>
                 </button>
                 <div 
-                  className={`px-6 overflow-hidden transition-all duration-300 ${
-                    activeAccordion === index ? 'max-h-96 pb-6' : 'max-h-0'
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    activeAccordion === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <p className="text-gray-400">{item.answer}</p>
+                  <div className="px-8 pb-8 pt-2">
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-500/30 to-transparent mb-6"></div>
+                    <p className="text-gray-300 leading-relaxed">{item.answer}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -451,65 +642,119 @@ export default function LandingPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 scroll-mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Siap Meningkatkan Performa Bisnis Anda?
-          </h2>
-          <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            Mulai gratis 14 hari. Tanpa kartu kredit.
-          </p>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-500 rounded-xl text-lg px-8 shadow-lg shadow-blue-500/20" asChild>
-            <Link href="/daftar">Mulai Sekarang <ArrowRight className="ml-2" /></Link>
-          </Button>
+      <section id="contact" className="py-32 scroll-mt-24 relative">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent to-[#0c1525]"></div>
+          <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-t from-transparent to-[#020617]"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-600/10 blur-[150px] opacity-70"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-blue-400/10 blur-[150px] opacity-70"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="premium-card max-w-4xl mx-auto p-12 animate-fade-in">
+            <div className="relative z-10">
+              <div className="inline-block px-4 py-1.5 rounded-full bg-blue-900/80 border border-blue-500/30 text-sm text-blue-300 mb-6">
+                Mulai Sekarang
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-100 to-white bg-clip-text text-transparent">
+                Siap Meningkatkan Performa Bisnis Anda?
+              </h2>
+              <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                Mulai <span className="text-blue-300">gratis 14 hari</span>. Tanpa kartu kredit.
+              </p>
+              <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                <Button 
+                  size="lg" 
+                  className="premium-button h-14 text-lg px-10 font-medium w-full md:w-auto" 
+                  asChild
+                >
+                  <Link href="/daftar">
+                    Mulai Sekarang 
+                    <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+                
+                <div className="flex items-center gap-4 text-gray-400">
+                  <div className="w-12 h-12 rounded-full bg-blue-900/50 border border-blue-500/30 flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-blue-300" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-gray-300">100% Aman & Terjamin</span>
+                    <div className="text-sm">Dukungan 24/7</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-blue-900/30 py-12">
+      <footer className="border-t border-blue-900/20 py-16 bg-[#0c1525]">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 text-gray-400">
+          <div className="grid md:grid-cols-4 gap-12 text-gray-400">
             <div>
-              <h3 className="font-bold text-white mb-4">Zenith AI</h3>
-              <p className="text-sm">AI Chatbot CRM untuk UMKM Indonesia</p>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
+                  Zenith AI
+                </span>
+              </div>
+              <p className="text-gray-400 mb-6">AI Chatbot CRM untuk UMKM Indonesia yang ingin meningkatkan konversi penjualan.</p>
               <div className="flex space-x-4 mt-4">
-                <a href="#" className="text-gray-400 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-                </a>
+                {['facebook', 'instagram', 'twitter', 'linkedin'].map((social, i) => (
+                  <a 
+                    key={i} 
+                    href="#" 
+                    className="w-10 h-10 rounded-full bg-blue-950/50 border border-blue-500/20 flex items-center justify-center text-gray-400 hover:text-blue-300 hover:border-blue-500/40 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                  </a>
+                ))}
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Produk</h4>
-              <div className="space-y-2">
-                <button onClick={() => scrollToSection('features')} className="block hover:text-white">Fitur</button>
-                <button onClick={() => scrollToSection('how-it-works')} className="block hover:text-white">Cara Kerja</button>
-                <Link href="/harga" className="block hover:text-white">Harga</Link>
+              <h4 className="font-bold text-white mb-6">Produk</h4>
+              <div className="space-y-3">
+                <button onClick={() => scrollToSection('features')} className="block hover:text-blue-300 transition-colors">Fitur</button>
+                <button onClick={() => scrollToSection('how-it-works')} className="block hover:text-blue-300 transition-colors">Cara Kerja</button>
+                <Link href="/harga" className="block hover:text-blue-300 transition-colors">Harga</Link>
+                <Link href="/integrasi" className="block hover:text-blue-300 transition-colors">Integrasi</Link>
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Perusahaan</h4>
-              <div className="space-y-2">
-                <Link href="/tentang-kami" className="block hover:text-white">Tentang Kami</Link>
-                <Link href="/partnerships" className="block hover:text-white">Partnership</Link>
-                <button onClick={() => scrollToSection('contact')} className="block hover:text-white">Kontak</button>
+              <h4 className="font-bold text-white mb-6">Perusahaan</h4>
+              <div className="space-y-3">
+                <Link href="/tentang-kami" className="block hover:text-blue-300 transition-colors">Tentang Kami</Link>
+                <Link href="/partnerships" className="block hover:text-blue-300 transition-colors">Partnership</Link>
+                <Link href="/career" className="block hover:text-blue-300 transition-colors">Karir</Link>
+                <button onClick={() => scrollToSection('contact')} className="block hover:text-blue-300 transition-colors">Kontak</button>
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Legal</h4>
-              <div className="space-y-2">
-                <Link href="/kebijakan-privasi" className="block hover:text-white">Kebijakan Privasi</Link>
-                <Link href="/syarat-ketentuan" className="block hover:text-white">Syarat & Ketentuan</Link>
+              <h4 className="font-bold text-white mb-6">Legal</h4>
+              <div className="space-y-3">
+                <Link href="/kebijakan-privasi" className="block hover:text-blue-300 transition-colors">Kebijakan Privasi</Link>
+                <Link href="/syarat-ketentuan" className="block hover:text-blue-300 transition-colors">Syarat & Ketentuan</Link>
+                <Link href="/keamanan" className="block hover:text-blue-300 transition-colors">Keamanan</Link>
               </div>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-blue-900/30 text-center text-gray-500">
-            © 2024 Zenith AI. Hak Cipta Dilindungi.
+          
+          <div className="mt-16 pt-8 border-t border-blue-900/20 flex flex-col md:flex-row justify-between items-center text-gray-500">
+            <div>© 2024 Zenith AI. Hak Cipta Dilindungi.</div>
+            <div className="mt-4 md:mt-0">
+              <div className="flex items-center gap-2">
+                <span>Made with</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+                <span>in Jakarta, Indonesia</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
