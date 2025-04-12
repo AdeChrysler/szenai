@@ -31,15 +31,15 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-[#0f172a] dark:bg-gray-950">
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <Card className="max-w-md w-full space-y-6 bg-[#0c1525] dark:bg-gray-900 p-8 rounded-lg shadow-md border-blue-900/30 dark:border-gray-800">
+        <Card className="max-w-md w-full space-y-6 bg-[#0c1525] dark:bg-gray-900 p-8 rounded-lg shadow-md border-blue-900/30 dark:border-gray-800 text-white">
           <CardHeader className="space-y-2 text-center p-0">
             <div className="mx-auto mb-2 bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center">
               <Zap className="h-7 w-7 text-white" />
             </div>
-            <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-3xl font-bold text-white">
               {currentForm === 'login' ? 'Selamat Datang' : 'Buat Akun'}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               {currentForm === 'login'
                 ? 'Masuk ke akun Anda untuk melanjutkan'
                 : 'Daftar untuk akun baru dan nikmati fitur Zenith AI'}
