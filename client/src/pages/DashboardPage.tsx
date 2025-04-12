@@ -94,6 +94,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const [location] = useLocation();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); // Added state for notifications
 
   useEffect(() => {
     if (isDarkMode) {
@@ -237,17 +238,53 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative text-gray-300 hover:bg-[#182338] hover:text-blue-300"
-                      onClick={() => console.log('Notifications clicked')}
-                    >
-                      <Bell className="h-5 w-5" />
-                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
-                        3
-                      </span>
-                    </Button>
+                    <div className="relative">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative text-gray-300 hover:bg-[#182338] hover:text-blue-300"
+                        onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                        aria-haspopup="true"
+                        aria-expanded={isNotificationsOpen}
+                      >
+                        <Bell className="h-5 w-5" />
+                        <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+                          3
+                        </span>
+                      </Button>
+
+                      {isNotificationsOpen && (
+                        <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                          <div className="px-4 py-2 text-sm font-medium border-b border-gray-200 dark:border-gray-700">
+                            Notifikasi
+                          </div>
+                          <div className="max-h-[300px] overflow-y-auto">
+                            {[
+                              { title: 'Lead baru', message: 'Anda mendapatkan lead baru dari WhatsApp', time: '5 menit lalu', isNew: true },
+                              { title: 'Jadwal Demo', message: 'Demo dengan PT Mitra Sejahtera dijadwalkan besok pukul 10:00', time: '1 jam lalu', isNew: true },
+                              { title: 'Percakapan Baru', message: 'Percakapan baru dimulai di Instagram', time: '3 jam lalu', isNew: true },
+                              { title: 'Laporan Mingguan', message: 'Laporan mingguan aktivitas chatbot telah tersedia', time: '1 hari lalu', isNew: false },
+                            ].map((notification, index) => (
+                              <div 
+                                key={index} 
+                                className={`px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 ${notification.isNew ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                              >
+                                <div className="flex justify-between">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-white">{notification.title}</p>
+                                  <span className="text-xs text-gray-500">{notification.time}</span>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{notification.message}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                            <button className="text-sm text-blue-600 hover:text-blue-500 font-medium w-full text-center">
+                              Lihat semua notifikasi
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Notifikasi</p>
@@ -317,7 +354,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         {/* Page content */}
         <main className="flex-1 p-4 sm:p-5 md:p-6 overflow-x-hidden">
           {children}
-          <ChatBubble /> {/* Added ChatBubble component to the landing page */}
         </main>
       </div>
     </div>
@@ -652,6 +688,7 @@ const DashboardPage: React.FC = () => {
                 <Button 
                   variant="outline" 
                   className="w-full border-blue-600 text-blue-600 hover:bg-blue-600/10 dark:border-blue-500 dark:text-blue-500 transition-all hover:scale-[1.02]"
+                >
                 >
                   Kelola Integrasi
                 </Button>
