@@ -222,24 +222,57 @@ const AnalyticsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="h-80 flex items-end gap-2 pt-10">
-              {/* Enhanced chart with animation and full data */}
-              {[35, 42, 58, 63, 47, 75, 68, 82, 73, 62, 55, 70].map((height, index) => (
+              {/* Enhanced chart with animation and rich data */}
+              {[
+                { month: 'Jan', leads: 35, sales: 12, rate: '34%', platform: 'WhatsApp' },
+                { month: 'Feb', leads: 42, sales: 18, rate: '43%', platform: 'Instagram' },
+                { month: 'Mar', leads: 58, sales: 24, rate: '41%', platform: 'Web Chat' },
+                { month: 'Apr', leads: 63, sales: 27, rate: '43%', platform: 'WhatsApp' },
+                { month: 'Mei', leads: 47, sales: 18, rate: '38%', platform: 'Instagram' },
+                { month: 'Jun', leads: 75, sales: 32, rate: '43%', platform: 'Web Chat' },
+                { month: 'Jul', leads: 68, sales: 30, rate: '44%', platform: 'WhatsApp' },
+                { month: 'Agu', leads: 82, sales: 38, rate: '46%', platform: 'Instagram' },
+                { month: 'Sep', leads: 73, sales: 29, rate: '40%', platform: 'Web Chat' },
+                { month: 'Okt', leads: 62, sales: 28, rate: '45%', platform: 'WhatsApp' },
+                { month: 'Nov', leads: 55, sales: 22, rate: '40%', platform: 'Instagram' },
+                { month: 'Des', leads: 70, sales: 33, rate: '47%', platform: 'Web Chat' }
+              ].map((data, index) => (
                 <div key={index} className="relative flex-1 transition-all group">
                   <div 
-                    className="bg-blue-600 dark:bg-blue-500 rounded-t-sm w-full relative animate-slide-in-up"
+                    className="bg-blue-600 dark:bg-blue-500 rounded-t-sm w-full relative animate-slide-in-up transition-all duration-300 hover:bg-blue-500"
                     style={{ 
-                      height: `${height}%`, 
-                      animationDelay: `${index * 0.1}s`,
-                      animationDuration: '0.8s' 
+                      height: `${data.leads}%`, 
+                      animationDelay: `${index * 0.08}s`,
+                      animationDuration: '1s' 
                     }}
                   >
                     <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      {height} leads
+                    <div className="absolute -top-24 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-800 text-white px-3 py-2 rounded-md text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg z-30">
+                      <div className="font-medium text-sm">{data.month} {new Date().getFullYear()}</div>
+                      <div className="flex justify-between gap-6 mt-1">
+                        <span className="text-gray-300">Leads:</span>
+                        <span>{data.leads}</span>
+                      </div>
+                      <div className="flex justify-between gap-6">
+                        <span className="text-gray-300">Sales:</span>
+                        <span>{data.sales}</span>
+                      </div>
+                      <div className="flex justify-between gap-6">
+                        <span className="text-gray-300">Rate:</span>
+                        <span className="text-green-400">{data.rate}</span>
+                      </div>
+                      <div className="text-xs text-blue-300 mt-1">{data.platform}</div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-800"></div>
+                    </div>
+                    <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-1 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ animationDelay: `${index * 0.08 + 0.5}s` }}
+                      ></div>
                     </div>
                   </div>
                   <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
-                    {['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][index]}
+                    {data.month}
                   </div>
                 </div>
               ))}

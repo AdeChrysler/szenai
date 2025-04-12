@@ -49,87 +49,187 @@ const ChatPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'answered' | 'unanswered'>('all');
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   
-  // Sample chats data
+  // Enhanced sample chats data with rich information
   const chats: Chat[] = [
     {
       id: '1',
-      user: { id: '101', name: 'Budi Santoso', initials: 'BS' },
-      lastMessage: 'Apakah ada diskon untuk paket Enterprise?',
+      user: { 
+        id: '101', 
+        name: 'Budi Santoso', 
+        initials: 'BS',
+        email: 'budi.santoso@example.com',
+        phone: '081234567890',
+        company: 'PT Maju Sejahtera'
+      },
+      lastMessage: 'Apakah ada diskon untuk paket Enterprise jika berlangganan 1 tahun?',
       lastMessageTime: '10 menit lalu',
       platform: 'WhatsApp',
       status: 'answered',
+      messageCount: 8,
+      potentialValue: 'Rp 15,000,000',
+      leadScore: 85
     },
     {
       id: '2',
-      user: { id: '102', name: 'Rina Wati', initials: 'RW' },
-      lastMessage: 'Saya tertarik dengan paket Premium yang ditawarkan',
+      user: { 
+        id: '102', 
+        name: 'Rina Wati', 
+        initials: 'RW',
+        email: 'rina.wati@example.com',
+        phone: '085678901234',
+        company: 'CV Digital Kreatif'
+      },
+      lastMessage: 'Saya tertarik dengan paket Premium yang ditawarkan, kapan ada waktu untuk demo?',
       lastMessageTime: '25 menit lalu',
       platform: 'Instagram',
       status: 'unanswered',
+      messageCount: 5,
+      potentialValue: 'Rp 8,500,000',
+      leadScore: 75
     },
     {
       id: '3',
-      user: { id: '103', name: 'Denny Kurniawan', initials: 'DK' },
-      lastMessage: 'Bagaimana cara mengintegrasikan dengan sistem yang sudah ada?',
+      user: { 
+        id: '103', 
+        name: 'Denny Kurniawan', 
+        initials: 'DK',
+        email: 'denny.k@example.com',
+        phone: '081122334455',
+        company: 'PT Tech Solutions'
+      },
+      lastMessage: 'Bagaimana cara mengintegrasikan dengan sistem CRM yang sudah ada? Kami menggunakan Salesforce.',
       lastMessageTime: '1 jam lalu',
       platform: 'WhatsApp',
       status: 'answered',
+      messageCount: 12,
+      potentialValue: 'Rp 24,000,000',
+      leadScore: 90
     },
     {
       id: '4',
-      user: { id: '104', name: 'Maya Indah', initials: 'MI' },
-      lastMessage: 'Tolong info untuk paket UMKM, apakah bisa custom?',
+      user: { 
+        id: '104', 
+        name: 'Maya Indah', 
+        initials: 'MI',
+        email: 'maya.indah@example.com',
+        phone: '089876543210',
+        company: 'Batik Nusantara'
+      },
+      lastMessage: 'Tolong info untuk paket UMKM, apakah bisa custom chatbot untuk toko batik?',
       lastMessageTime: '2 jam lalu',
       platform: 'Web Chat',
       status: 'answered',
+      messageCount: 7,
+      potentialValue: 'Rp 5,500,000',
+      leadScore: 65
     },
     {
       id: '5',
-      user: { id: '105', name: 'Agus Prayitno', initials: 'AP' },
-      lastMessage: 'Apakah bisa digunakan untuk toko online saya?',
+      user: { 
+        id: '105', 
+        name: 'Agus Prayitno', 
+        initials: 'AP',
+        email: 'agus.p@example.com',
+        phone: '087890123456',
+        company: 'Toko Online Sejahtera'
+      },
+      lastMessage: 'Apakah bisa digunakan untuk toko online saya? Kami punya sekitar 5000 produk di katalog.',
       lastMessageTime: '3 jam lalu',
       platform: 'Instagram',
       status: 'unanswered',
+      messageCount: 4,
+      potentialValue: 'Rp 6,200,000',
+      leadScore: 70
     },
     {
       id: '6',
-      user: { id: '106', name: 'Dewi Lestari', initials: 'DL' },
-      lastMessage: 'Saya sudah transfer untuk berlangganan paket Premium',
+      user: { 
+        id: '106', 
+        name: 'Dewi Lestari', 
+        initials: 'DL',
+        email: 'dewi.l@example.com',
+        phone: '081234567891',
+        company: 'Mode Fashion Indonesia'
+      },
+      lastMessage: 'Saya sudah transfer untuk berlangganan paket Premium, mohon konfirmasi aktivasinya.',
       lastMessageTime: '4 jam lalu',
       platform: 'WhatsApp',
       status: 'unanswered',
+      messageCount: 15,
+      potentialValue: 'Rp 9,800,000',
+      leadScore: 95
     },
     {
       id: '7',
-      user: { id: '107', name: 'Joko Widodo', initials: 'JW' },
-      lastMessage: 'Berapa harga untuk 10 pengguna?',
+      user: { 
+        id: '107', 
+        name: 'Joko Widodo', 
+        initials: 'JW',
+        email: 'joko.w@example.com',
+        phone: '085678901235',
+        company: 'PT Konstruksi Jaya'
+      },
+      lastMessage: 'Berapa harga untuk 10 pengguna dalam tim customer service kami? Apakah ada diskon kuantitas?',
       lastMessageTime: '5 jam lalu',
       platform: 'Web Chat',
       status: 'answered',
+      messageCount: 9,
+      potentialValue: 'Rp 18,500,000',
+      leadScore: 80
     },
     {
       id: '8',
-      user: { id: '108', name: 'Siti Nurhaliza', initials: 'SN' },
-      lastMessage: 'Apakah ada fitur untuk analisis sentimen?',
+      user: { 
+        id: '108', 
+        name: 'Siti Nurhaliza', 
+        initials: 'SN',
+        email: 'siti.n@example.com',
+        phone: '081122334466',
+        company: 'Restoran Padang Sedap'
+      },
+      lastMessage: 'Apakah ada fitur untuk analisis sentimen dari komentar pelanggan restoran kami?',
       lastMessageTime: '6 jam lalu',
       platform: 'Instagram',
       status: 'unanswered',
+      messageCount: 6,
+      potentialValue: 'Rp 7,200,000',
+      leadScore: 65
     },
     {
       id: '9',
-      user: { id: '109', name: 'Anwar Ibrahim', initials: 'AI' },
-      lastMessage: 'Bagaimana dengan keamanan data pelanggan?',
+      user: { 
+        id: '109', 
+        name: 'Anwar Ibrahim', 
+        initials: 'AI',
+        email: 'anwar.i@example.com',
+        phone: '089876543211',
+        company: 'Bank Digital Now'
+      },
+      lastMessage: 'Bagaimana dengan keamanan data pelanggan? Kami di industri perbankan sangat concern tentang ini.',
       lastMessageTime: '7 jam lalu',
       platform: 'WhatsApp',
       status: 'answered',
+      messageCount: 18,
+      potentialValue: 'Rp 32,000,000',
+      leadScore: 95
     },
     {
       id: '10',
-      user: { id: '110', name: 'Kartini Putri', initials: 'KP' },
-      lastMessage: 'Butuh demo untuk tim marketing kami',
+      user: { 
+        id: '110', 
+        name: 'Kartini Putri', 
+        initials: 'KP',
+        email: 'kartini.p@example.com',
+        phone: '087890123457',
+        company: 'PT Edukasi Maju'
+      },
+      lastMessage: 'Butuh demo untuk tim marketing kami, kapan tim Anda bisa presentasi?',
       lastMessageTime: '8 jam lalu',
       platform: 'Web Chat',
       status: 'unanswered',
+      messageCount: 7,
+      potentialValue: 'Rp 12,500,000',
+      leadScore: 85
     },
   ];
 
@@ -156,33 +256,55 @@ const ChatPage: React.FC = () => {
 
   const selectedChat = chats.find(chat => chat.id === selectedChatId);
 
-  // Sample messages for the selected chat
-  const messages = [
+  // Enhanced sample messages for the selected chat with more interactions
+  const messages = selectedChat ? [
     {
       id: '1',
       sender: 'user',
-      text: 'Halo, saya tertarik dengan layanan Zenith AI',
+      text: 'Halo, saya tertarik dengan layanan Zenith AI untuk bisnis kami',
       time: '14:30',
     },
     {
       id: '2',
       sender: 'bot',
-      text: 'Halo! Terima kasih telah menghubungi Zenith AI. Kami senang Anda tertarik dengan layanan kami. Ada yang bisa saya bantu?',
+      text: 'Halo! Terima kasih telah menghubungi Zenith AI. Kami senang Anda tertarik dengan layanan kami. Boleh saya tahu jenis bisnis apa yang Anda jalankan saat ini?',
       time: '14:31',
     },
     {
       id: '3',
       sender: 'user',
-      text: selectedChat?.lastMessage || 'Apakah ada paket khusus untuk UMKM?',
+      text: `Kami di ${selectedChat.user.company || 'perusahaan kami'} bergerak di bidang ${selectedChat.user.company?.includes('Tech') ? 'teknologi dan perangkat lunak' : selectedChat.user.company?.includes('Digital') ? 'pemasaran digital' : 'retail dan distribusi'}`,
       time: '14:32',
     },
     {
       id: '4',
       sender: 'bot',
-      text: 'Tentu, kami memiliki paket khusus untuk UMKM dengan harga terjangkau mulai dari Rp 299.000/bulan. Paket ini mencakup chatbot AI, integrasi WhatsApp, dan dashboard analitik dasar. Apakah Anda ingin saya kirimkan detail lengkapnya?',
+      text: `Terima kasih informasinya. Kami memiliki solusi yang cocok untuk bisnis ${selectedChat.user.company?.includes('Tech') ? 'teknologi' : selectedChat.user.company?.includes('Digital') ? 'pemasaran digital' : 'retail'} seperti yang Anda jalankan. Zenith AI dapat membantu dengan otomatisasi pesan, kualifikasi leads, dan analisis percakapan.`,
       time: '14:33',
     },
-  ];
+    {
+      id: '5',
+      sender: 'user',
+      text: selectedChat.lastMessage,
+      time: '14:35',
+    },
+    {
+      id: '6',
+      sender: 'bot',
+      text: selectedChat.status === 'answered' ? 
+        `Tentu, ${selectedChat.platform === 'WhatsApp' ? 'kami bisa membantu dengan pertanyaan WhatsApp Anda' : selectedChat.platform === 'Instagram' ? 'kami bisa membantu dengan pertanyaan Instagram Anda' : 'kami bisa membantu dengan pertanyaan Web Chat Anda'}. ${selectedChat.user.company ? `Untuk perusahaan ${selectedChat.user.company}, ` : ''}kami menawarkan paket yang bisa disesuaikan dengan kebutuhan Anda. Paket mulai dari Rp 299.000/bulan untuk UMKM hingga paket Enterprise dengan fitur lengkap.` :
+        'Mohon tunggu sebentar, tim kami akan segera membantu Anda dengan pertanyaan ini.',
+      time: '14:36',
+    },
+    ...(selectedChat.status === 'answered' ? [
+      {
+        id: '7',
+        sender: 'bot',
+        text: 'Apakah ada pertanyaan spesifik lain yang ingin Anda tanyakan? Atau Anda ingin kami mengirimkan proposal yang lebih detail sesuai kebutuhan bisnis Anda?',
+        time: '14:37',
+      }
+    ] : [])
+  ] : [];
 
   return (
     <DashboardLayout>
@@ -308,29 +430,62 @@ const ChatPage: React.FC = () => {
                     {selectedChat.lastMessageTime.includes('menit') ? 'Hari ini' : 'Kemarin'}
                   </div>
                   
-                  {messages.map((message) => (
+                  {messages.map((message, index) => (
                     <div 
                       key={message.id}
-                      className={`flex ${message.sender === 'user' ? 'justify-start' : 'justify-end'}`}
+                      className={`flex ${message.sender === 'user' ? 'justify-start' : 'justify-end'} mb-4 animate-fade-in`}
+                      style={{ animationDelay: `${0.1 + (index * 0.1)}s` }}
                     >
+                      {message.sender === 'user' && (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2 mt-1 overflow-hidden">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {selectedChat?.user.initials}
+                          </span>
+                        </div>
+                      )}
                       <div 
-                        className={`max-w-[80%] rounded-lg p-3 ${
+                        className={`max-w-[80%] rounded-lg p-4 shadow-sm ${
                           message.sender === 'user' 
-                            ? 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100' 
-                            : 'bg-blue-600 text-white'
-                        }`}
+                            ? 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-tl-none' 
+                            : 'bg-blue-600 text-white rounded-tr-none'
+                        } transition-all duration-300 hover:shadow-md`}
                       >
-                        <div className="whitespace-pre-wrap">{message.text}</div>
-                        <div className={`text-xs mt-1 text-right ${
+                        <div className="whitespace-pre-wrap text-sm">{message.text}</div>
+                        <div className={`text-xs mt-2 text-right flex items-center justify-end ${
                           message.sender === 'user' 
                             ? 'text-gray-500 dark:text-gray-400' 
                             : 'text-blue-100'
                         }`}>
                           {message.time}
+                          {message.sender !== 'user' && (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
                         </div>
                       </div>
+                      {message.sender !== 'user' && (
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center ml-2 mt-1 overflow-hidden">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
                   ))}
+                  
+                  {selectedChat?.status === 'unanswered' && (
+                    <div className="flex justify-center my-4 animate-pulse-subtle">
+                      <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-xs text-gray-500 flex items-center">
+                        <div className="flex space-x-1 mr-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                        Menunggu agen membalas...
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex justify-center">
                     <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-xs text-gray-500">

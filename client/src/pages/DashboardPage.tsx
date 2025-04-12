@@ -259,7 +259,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         </header>
         
         {/* Page content */}
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-x-hidden">
           {children}
         </main>
       </div>
@@ -345,7 +345,7 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((card, index) => (
             <Card 
               key={index} 
@@ -387,18 +387,32 @@ const DashboardPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="h-80 flex items-end gap-2 pt-10">
-                {[40, 65, 50, 80, 75, 90, 60].map((height, index) => (
-                  <div key={index} className="relative flex-1 transition-all">
+                {[
+                  {day: 'Sen', value: 42, chats: 34, platform: 'WhatsApp'},
+                  {day: 'Sel', value: 65, chats: 52, platform: 'Instagram'},
+                  {day: 'Rab', value: 53, chats: 45, platform: 'WhatsApp'},
+                  {day: 'Kam', value: 78, chats: 63, platform: 'Web Chat'},
+                  {day: 'Jum', value: 75, chats: 60, platform: 'Instagram'},
+                  {day: 'Sab', value: 90, chats: 72, platform: 'WhatsApp'},
+                  {day: 'Min', value: 62, chats: 48, platform: 'Web Chat'}
+                ].map((item, index) => (
+                  <div key={index} className="relative flex-1 transition-all group">
                     <div 
-                      className="bg-blue-600 rounded-t-md w-full transition-all duration-1000 animate-slide-in-up"
+                      className="bg-blue-600 rounded-t-md w-full transition-all duration-1000 animate-slide-in-up hover:bg-blue-500"
                       style={{ 
-                        height: `${height}%`, 
+                        height: `${item.value}%`, 
                         animationDelay: `${0.1 + (index * 0.1)}s`,
                         animationDuration: '0.8s'
                       }}
-                    ></div>
+                    >
+                      <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-blue-900 text-white px-2 py-1.5 rounded-md text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 shadow-lg">
+                        <div className="font-medium">{item.chats} percakapan</div>
+                        <div className="text-blue-200 text-[10px]">Via {item.platform}</div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-blue-900"></div>
+                      </div>
+                    </div>
                     <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
-                      {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][index]}
+                      {item.day}
                     </div>
                   </div>
                 ))}
