@@ -14,6 +14,7 @@ interface Message {
 const ChatBubble: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [sessionId, setSessionId] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([
     {
       content: "Hi there! How can I help you today?",
@@ -24,6 +25,19 @@ const ChatBubble: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatCardRef = useRef<HTMLDivElement>(null);
+
+  // Initialize session ID when component mounts
+  useEffect(() => {
+    // Generate a new session ID or get from localStorage if exists
+    const storedSessionId = localStorage.getItem('chatSessionId');
+    if (storedSessionId) {
+      setSessionId(storedSessionId);
+    } else {
+      const newSessionId = crypto.randomUUID();
+      setSessionId(newSessionId);
+      localStorage.setItem('chatSessionId', newSessionId);
+    }
+  }, []);
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -65,13 +79,17 @@ const ChatBubble: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ chatInput: userMessage.content }),
+        body: JSON.stringify({ 
+          chatInput: userMessage.content,
+          sessionId: sessionId
+        }),
       });
       
       if (response.ok) {
         const data = await response.json();
+        const aiResponse = data.response || data.output || "Sorry, I couldn't process your request.";
         setMessages(prev => [...prev, {
-          content: data.response || "Sorry, I couldn't process your request.",
+          content: aiResponse,
           role: 'assistant',
           timestamp: new Date()
         }]);
@@ -168,7 +186,8 @@ const ChatBubble: React.FC = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 text-gray-900 dark:text-white"
+                autoComplete="off"
               />
               <Button 
                 type="submit" 
