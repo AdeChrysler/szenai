@@ -117,6 +117,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           title: "Login successful",
           description: "Welcome back!",
         });
+        
+        // Redirect to dashboard after successful login
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       setAuthState(prev => ({
@@ -140,7 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Passwords don't match");
       }
       
-      const { user } = await signUp(credentials.email, credentials.password);
+      const { user, error: signUpError } = await signUp(credentials.email, credentials.password);
+      
+      if (signUpError) {
+        throw new Error(signUpError.message);
+      }
       
       setAuthState({
         user: user ? { id: user.id, email: user.email || '' } : null,
@@ -150,8 +157,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast({
         title: "Registration successful",
-        description: "Your account has been created. Please check your email for verification.",
+        description: "Your account has been created. Please login to continue.",
       });
+      
+      // Redirect to login page after successful registration
+      window.location.href = '/login';
     } catch (error) {
       setAuthState(prev => ({
         ...prev,

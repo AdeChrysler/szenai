@@ -32,19 +32,17 @@ export const signIn = async (email: string, password: string) => {
 };
 
 export const signUp = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) throw error;
-  
-  // After signup, create the user profile in the database
-  if (data.user) {
-    await createUserProfile({
-      id: parseInt(data.user.id),
-      email: data.user.email || '',
-      created_at: new Date()
-    });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    console.error("Signup error:", error);
+    return { user: null, session: null, error };
   }
-  
-  return data;
+
+  return { user: data.user, session: data.session, error: null };
 };
 
 export const signOut = async () => {
@@ -65,12 +63,12 @@ export const createUserProfile = async (user: Partial<User>) => {
     .from('users')
     .insert([user])
     .select();
-    
+
   if (error) {
     console.error('Error creating user profile:', error);
     throw error;
   }
-  
+
   return data[0];
 };
 
@@ -80,12 +78,12 @@ export const getUserProfile = async (userId: number) => {
     .select('*')
     .eq('id', userId)
     .single();
-    
+
   if (error) {
     console.error('Error getting user profile:', error);
     throw error;
   }
-  
+
   return data;
 };
 
@@ -95,12 +93,12 @@ export const getUserByEmail = async (email: string) => {
     .select('*')
     .eq('email', email)
     .single();
-    
+
   if (error && error.code !== 'PGRST116') { // PGRST116 is "Not Found"
     console.error('Error getting user by email:', error);
     throw error;
   }
-  
+
   return data || null;
 };
 
@@ -110,12 +108,12 @@ export const createMessage = async (message: Partial<Message>) => {
     .from('messages')
     .insert([message])
     .select();
-    
+
   if (error) {
     console.error('Error creating message:', error);
     throw error;
   }
-  
+
   return data[0];
 };
 
@@ -126,11 +124,11 @@ export const getMessagesBySession = async (userId: number, sessionId: string) =>
     .eq('user_id', userId)
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
-    
+
   if (error) {
     console.error('Error getting messages:', error);
     throw error;
   }
-  
+
   return data || [];
 };
