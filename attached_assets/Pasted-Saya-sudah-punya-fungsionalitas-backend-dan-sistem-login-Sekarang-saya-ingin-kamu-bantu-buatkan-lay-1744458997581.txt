@@ -1,0 +1,72 @@
+Saya sudah punya fungsionalitas backend dan sistem login. Sekarang saya ingin kamu bantu buatkan layout dan UI **dashboard internal setelah login**, seperti SaaS pada umumnya.
+
+Framework: **Next.js + TailwindCSS**
+
+---
+
+### 🎯 Konteks:
+Nama produk: **Zenith AI**  
+Jenis: Chatbot CRM berbasis AI untuk UMKM Indonesia  
+Setelah login, user akan masuk ke **dashboard** untuk mengelola chatbot, melihat leads, dan mengakses integrasi.
+
+---
+
+### 🧱 Struktur Layout:
+- Sidebar kiri (sticky) dengan logo dan navigation
+- Topbar dengan nama pengguna, icon notifikasi, dan tombol logout
+- Konten utama di kanan (grid atau scrollable)
+
+---
+
+### 🔐 Halaman-halaman setelah login:
+1. **/dashboard** – Home
+   - Ringkasan: jumlah leads, performa chatbot, total chat masuk
+   - Komponen: 3–4 card statistik dan grafik dummy
+
+2. **/chat** – Riwayat Chat
+   - List semua chat yang masuk (dummy)
+   - Nama, waktu, status (terjawab/belum), tombol “Lihat Detail”
+   - Search bar dan filter
+
+3. **/leads** – Manajemen Leads
+   - Tabel berisi data leads (nama, no WA, status, sumber)
+   - Bisa edit tag atau tambahkan notes
+   - Filter berdasarkan status (hot/warm/cold)
+
+4. **/analytics** – Statistik
+   - Grafik performa: jumlah chat harian, waktu respon rata-rata, konversi
+   - Gunakan dummy chart (pakai library charting jika mau)
+
+5. **/integrations** – Halaman Integrasi
+   - Logo dan status integrasi: WhatsApp, Instagram, Webchat, Notion, Google Sheets
+   - Tombol “Hubungkan” atau “Terputus”
+
+6. **/settings** – Pengaturan
+   - Ganti password, edit profil, atur FAQ bot, toggle notifikasi
+   - Area upload data FAQ atau template bot (dummy form)
+
+---
+
+### 🧠 Desain Visual:
+- **Dark mode**  
+- Warna dasar: `#0f172a` (biru gelap), `#1e293b`, teks putih/abu
+- Sidebar tetap, topbar ringan, konten fokus
+- Gunakan TailwindCSS (`rounded-xl`, `shadow-lg`, `hover:brightness-110`)
+- Gunakan dummy data dalam Bahasa Indonesia
+- Tombol utama: biru terang dengan hover efek glow
+- Gunakan font modern dan padding cukup agar nyaman dibaca
+- Responsive layout (mobile-friendly)
+
+---
+
+### 🎯 Gaya Bahasa:
+- Seluruh teks dalam **Bahasa Indonesia**
+- Gunakan kata-kata familiar seperti “Leads”, “Chat Masuk”, “Terhubung ke WhatsApp”
+- Hindari lorem ipsum — pakai dummy content yang realistis
+
+---
+
+### 🧩 Output:
+- Semua halaman dengan konten dummy (tabel, grafik, list chat)
+- Komponen modular: Sidebar, Topbar, Card, Table
+- Jangan generate ulang auth atau backend logic — hanya fokus ke struktur dan konten visual
