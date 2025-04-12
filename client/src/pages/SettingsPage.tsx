@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DashboardLayout } from './DashboardPage';
 import { 
@@ -94,7 +93,7 @@ const SettingsPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="name">Nama</Label>
@@ -191,7 +190,7 @@ const SettingsPage: React.FC = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Email Notifications</h3>
                   <Separator />
-                  
+
                   <div className="grid gap-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -202,7 +201,7 @@ const SettingsPage: React.FC = () => {
                       </div>
                       <Switch defaultChecked />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-base">Percakapan Baru</Label>
@@ -212,7 +211,7 @@ const SettingsPage: React.FC = () => {
                       </div>
                       <Switch defaultChecked />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-base">Laporan Mingguan</Label>
@@ -222,7 +221,7 @@ const SettingsPage: React.FC = () => {
                       </div>
                       <Switch defaultChecked />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-base">Pengumuman Produk</Label>
@@ -238,7 +237,7 @@ const SettingsPage: React.FC = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Notifikasi Aplikasi</h3>
                   <Separator />
-                  
+
                   <div className="grid gap-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -249,7 +248,7 @@ const SettingsPage: React.FC = () => {
                       </div>
                       <Switch defaultChecked />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-base">Suara Notifikasi</Label>
@@ -397,7 +396,7 @@ const SettingsPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <Button variant="default">Upgrade Paket</Button>
                     <Button variant="outline">Batalkan Langganan</Button>
@@ -421,7 +420,7 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <Badge>Default</Badge>
                   </div>
-                  
+
                   <Button variant="outline">Tambah Metode Pembayaran</Button>
                 </CardContent>
               </Card>
@@ -443,7 +442,7 @@ const SettingsPage: React.FC = () => {
                         <Button variant="link" className="h-auto p-0 text-xs">Lihat faktur</Button>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
                       <div>
                         <p className="font-medium">UMKM Pro - Bulanan</p>
