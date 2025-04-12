@@ -33,6 +33,62 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 
+// New ChatBubble component
+const ChatBubble = () => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [userMessage, setUserMessage] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+
+  const sendMessage = async () => {
+    try {
+      const response = await fetch("https://n8n.sixzenith.space/webhook/149e7ffa-2030-4c4b-8663-f38642f0ef2d/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ chatInput: userMessage }),
+      });
+
+      const data = await response.json();
+      setAiResponse(data.aiResponse); // Assuming the API returns { aiResponse: "..." }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={() => setIsChatOpen(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Chat
+      </button>
+
+      {isChatOpen && (
+        <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg">
+          <div className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-end">
+                <p className="bg-gray-200 p-2 rounded">{userMessage}</p>
+              </div>
+              <div className="flex justify-start">
+                <p className="bg-blue-100 p-2 rounded">{aiResponse}</p>
+              </div>
+            </div>
+            <input
+              type="text"
+              value={userMessage}
+              onChange={(e) => setUserMessage(e.target.value)}
+              placeholder="Type your message..."
+            />
+            <button onClick={sendMessage}>Send</button>
+            <button onClick={() => setIsChatOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const [location] = useLocation();
@@ -261,6 +317,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         {/* Page content */}
         <main className="flex-1 p-4 sm:p-5 md:p-6 overflow-x-hidden">
           {children}
+          <ChatBubble /> {/* Added ChatBubble component to the landing page */}
         </main>
       </div>
     </div>

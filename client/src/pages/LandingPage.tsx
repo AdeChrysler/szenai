@@ -1,9 +1,10 @@
 
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2, Bot, Check, ChevronDown, ChevronUp, ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowRight, MessageSquare, Users, BarChart, Clock, Shield, Zap, Database, Share2, Bot, Check, ChevronDown, ChevronUp, ArrowUpRight, Sparkles, MessageCircle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import ChatBubble from "@/components/ChatBubble";
 
 export default function LandingPage() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -857,6 +858,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      
+      {/* Chat Bubble */}
+      <ChatBubble />
     </div>
   );
 }
