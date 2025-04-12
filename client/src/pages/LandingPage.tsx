@@ -52,39 +52,17 @@ export default function LandingPage() {
     }
   };
   
-  // Enhanced smooth scroll to demo section
+  // Fixed smooth scroll to demo section
   const scrollToDemo = () => {
     if (demoRef.current) {
       const headerOffset = 100;
       const elementPosition = demoRef.current.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
       
-      // Create a smoother scroll effect with subtle animation
-      const startPosition = window.pageYOffset;
-      const distance = offsetPosition - startPosition;
-      const duration = 1000; // ms
-      let start: number | null = null;
-      
-      const step = (timestamp: number) => {
-        if (!start) start = timestamp;
-        const progress = timestamp - start;
-        const percent = Math.min(progress / duration, 1);
-        
-        // Easing function for smoother animation
-        const easeInOutCubic = (t: number) => 
-          t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        
-        window.scrollTo({
-          top: startPosition + distance * easeInOutCubic(percent),
-          behavior: 'auto' // We're manually handling the smoothness
-        });
-        
-        if (progress < duration) {
-          window.requestAnimationFrame(step);
-        }
-      };
-      
-      window.requestAnimationFrame(step);
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -214,49 +192,49 @@ export default function LandingPage() {
 
       {/* Hero Section with enhanced animations */}
       <section className="py-32 px-4 relative overflow-hidden">
-        {/* Dynamic decorative elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-[20%] w-64 h-64 rounded-full bg-blue-600/20 blur-[100px] animate-pulse-scale"></div>
-          <div className="absolute bottom-20 right-[20%] w-96 h-96 rounded-full bg-blue-400/20 blur-[120px] animate-float-slow"></div>
-          <div className="absolute top-1/3 right-[15%] w-48 h-48 rounded-full bg-indigo-500/20 blur-[80px] animate-float" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-1/3 left-[15%] w-56 h-56 rounded-full bg-sky-500/20 blur-[90px] animate-float-slow" style={{animationDelay: '2s'}}></div>
+        {/* Subtle background elements */}
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute top-20 left-[20%] w-64 h-64 rounded-full bg-blue-600/20 blur-[100px]"></div>
+          <div className="absolute bottom-20 right-[20%] w-96 h-96 rounded-full bg-blue-400/20 blur-[120px] animate-float-subtle" style={{animationDelay: '0.5s'}}></div>
+          <div className="absolute top-1/3 right-[15%] w-48 h-48 rounded-full bg-indigo-500/20 blur-[80px] animate-float-subtle" style={{animationDelay: '1.5s'}}></div>
+          <div className="absolute bottom-1/3 left-[15%] w-56 h-56 rounded-full bg-sky-500/20 blur-[90px] animate-float-subtle" style={{animationDelay: '2.5s'}}></div>
         </div>
         
-        {/* Particle effects */}
-        <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
-          {Array.from({length: 8}).map((_, i) => (
+        {/* Minimal particle effects */}
+        <div className="absolute inset-0 overflow-hidden opacity-5 pointer-events-none">
+          {Array.from({length: 4}).map((_, i) => (
             <div 
               key={i}
-              className="absolute w-1 h-1 rounded-full bg-blue-300 animate-float-rotate" 
+              className="absolute w-1 h-1 rounded-full bg-blue-300 animate-float-subtle" 
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDuration: `${5 + Math.random() * 10}s`,
-                animationDelay: `${Math.random() * 5}s`
+                top: `${20 + Math.random() * 60}%`,
+                left: `${20 + Math.random() * 60}%`,
+                animationDuration: `${8 + Math.random() * 6}s`,
+                animationDelay: `${Math.random() * 3}s`
               }}
             ></div>
           ))}
         </div>
         
         <div className="container mx-auto text-center max-w-4xl relative z-10">
-          <div className="inline-block mb-4 animate-float-rotate">
+          <div className="inline-block mb-4 animate-float-subtle">
             <div className="px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-sm text-blue-300 flex items-center gap-2 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse-scale"></span>
-              <span className="animate-fade-in-scale" style={{animationDelay: '0.1s'}}>Teknologi AI Generasi Terbaru</span>
+              <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+              <span className="animate-fade-in">Teknologi AI Generasi Terbaru</span>
             </div>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-            <span className="inline-block animate-fade-in-left" style={{animationDelay: '0.2s'}}>AI Chatbot untuk</span><br/>
-            <span className="inline-block animate-fade-in-right" style={{animationDelay: '0.4s'}}>Mengubah Chat Jadi</span>
-            <div className="inline-block relative animate-fade-in-scale" style={{animationDelay: '0.6s'}}>
-              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent relative z-10 animate-glow-intense"> Closing</span>
-              <div className="absolute -bottom-2 left-1 right-1 h-1 bg-gradient-to-r from-blue-400/40 to-blue-600/40 blur-sm animate-pulse-scale"></div>
+            <span className="inline-block animate-fade-in-left" style={{animationDelay: '0.1s'}}>AI Chatbot untuk</span><br/>
+            <span className="inline-block animate-fade-in-right" style={{animationDelay: '0.2s'}}>Mengubah Chat Jadi</span>
+            <div className="inline-block relative animate-fade-in-scale" style={{animationDelay: '0.3s'}}>
+              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent relative z-10"> Closing</span>
+              <div className="absolute -bottom-2 left-1 right-1 h-1 bg-gradient-to-r from-blue-400/40 to-blue-600/40 blur-sm"></div>
             </div>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 animate-fade-in" style={{animationDelay: '0.7s'}}>
-            Zenith AI bantu Anda membalas chat WhatsApp & DM <span className="text-blue-300 inline-block animate-pulse-subtle">24 jam nonstop</span>, 
+          <p className="text-xl md:text-2xl text-gray-300 mb-12 animate-fade-in" style={{animationDelay: '0.4s'}}>
+            Zenith AI bantu Anda membalas chat WhatsApp & DM <span className="text-blue-300 inline-block">24 jam nonstop</span>, 
             kumpulkan leads, dan bantu closing otomatis.
           </p>
           
@@ -402,20 +380,19 @@ export default function LandingPage() {
               <div 
                 key={i} 
                 className={`premium-card group p-8 ${feature.animation}`}
-                style={{animationDelay: `${0.3 + 0.15 * i}s`}}
+                style={{animationDelay: `${0.1 + 0.05 * i}s`}}
               >
                 <div className="relative z-10">
                   <div 
-                    className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-800/50 to-blue-600/50 flex items-center justify-center mb-6 border border-blue-500/30 ${i % 2 === 0 ? 'animate-pulse-subtle' : 'animate-glow'}`}
-                    style={{animationDelay: `${0.2 * i}s`}}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-800/50 to-blue-600/50 flex items-center justify-center mb-6 border border-blue-500/30"
                   >
-                    <feature.icon className="w-7 h-7 text-blue-300 animate-fade-in-scale" style={{animationDelay: `${0.4 + 0.15 * i}s`}} />
+                    <feature.icon className="w-7 h-7 text-blue-300" />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-blue-300 transition-colors">{feature.title}</h3>
                   <p className="text-gray-300">{feature.desc}</p>
                   
-                  {/* Subtle animated indicator */}
-                  <div className="w-8 h-1 bg-gradient-to-r from-blue-500/50 to-transparent rounded-full mt-6 group-hover:w-full transition-all duration-700"></div>
+                  {/* Simple accent line */}
+                  <div className="w-8 h-px bg-blue-500/30 mt-6 group-hover:w-16 transition-all duration-300"></div>
                 </div>
               </div>
             ))}
@@ -533,21 +510,16 @@ export default function LandingPage() {
             </p>
           </div>
           
-          {/* Enhanced continuous scroll testimonials with premium styling */}
+          {/* Refined testimonials with natural scrolling */}
           <div className="relative overflow-hidden py-8 mb-16 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-24 before:bg-gradient-to-r before:from-[#020617] before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-24 after:bg-gradient-to-l after:from-[#020617] after:to-transparent">
-            <div className="flex animate-[scroll_30s_linear_infinite] gap-6 hover:pause">
+            <div className="flex animate-[scroll_40s_linear_infinite] gap-6 hover:pause">
               {[...testimonials, ...testimonials].map((item, i) => {
-                // Create varied animations for each card
-                const isOdd = i % 2 === 0;
-                const isThird = i % 3 === 0;
-                
                 return (
                   <div 
                     key={i} 
-                    className={`flex-shrink-0 max-w-sm w-80 p-6 premium-card ${isOdd ? 'hover:translate-y-2' : 'hover:-translate-y-2'}`}
+                    className="flex-shrink-0 max-w-sm w-80 p-6 premium-card transition-all duration-300 hover:brightness-110"
                     style={{
-                      animationDelay: `${0.2 * i}s`,
-                      transform: `translateY(${isOdd ? -5 : isThird ? 5 : 0}px)`
+                      transform: `translateY(${i % 3 === 0 ? -3 : i % 3 === 1 ? 0 : 3}px)`
                     }}
                   >
                     <div className="relative z-10">
@@ -556,8 +528,7 @@ export default function LandingPage() {
                           <svg 
                             key={idx} 
                             xmlns="http://www.w3.org/2000/svg" 
-                            className={`h-5 w-5 ${idx === 0 ? 'animate-pulse-scale' : ''}`}
-                            style={{animationDelay: `${0.2 * idx}s`}}
+                            className="h-5 w-5"
                             viewBox="0 0 20 20" 
                             fill="currentColor"
                           >
@@ -571,8 +542,8 @@ export default function LandingPage() {
                         <span className="absolute -right-2 bottom-0 text-4xl text-blue-500/20">"</span>
                       </p>
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 bg-gradient-to-br from-blue-800 to-blue-500 rounded-full overflow-hidden p-0.5 ${isOdd ? 'animate-pulse-subtle' : 'animate-glow'}`}>
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-full transition-transform duration-500 hover:scale-110" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-800 to-blue-500 rounded-full overflow-hidden p-0.5">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-full transition-transform duration-300 hover:scale-105" />
                         </div>
                         <div>
                           <div className="font-bold text-white">{item.name}</div>
@@ -580,9 +551,6 @@ export default function LandingPage() {
                           <div className="text-gray-400 text-sm">{item.company}</div>
                         </div>
                       </div>
-                      
-                      {/* Animated accent line */}
-                      <div className="w-0 group-hover:w-full h-px bg-gradient-to-r from-blue-500/30 to-transparent mt-4 transition-all duration-1000"></div>
                     </div>
                   </div>
                 );
@@ -724,18 +692,18 @@ export default function LandingPage() {
                   </div>
                 </button>
                 <div 
-                  className={`overflow-hidden transition-all duration-700 ease-in-out ${
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
                     activeAccordion === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
                   <div className="px-8 pb-8 pt-2">
-                    <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-500/30 to-transparent mb-6 animate-pulse-subtle"></div>
-                    <p className="text-gray-300 leading-relaxed animate-fade-in-scale" style={{animationDelay: '0.1s'}}>
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-500/30 to-transparent mb-6"></div>
+                    <p className="text-gray-300 leading-relaxed">
                       {item.answer}
                     </p>
                     
-                    {/* Animated decorative element */}
-                    <div className="h-1 w-16 bg-gradient-to-r from-blue-500/30 to-transparent rounded-full mt-6 animate-pulse-subtle"></div>
+                    {/* Simple decorative element */}
+                    <div className="h-px w-12 bg-blue-500/30 mt-6"></div>
                   </div>
                 </div>
               </div>
