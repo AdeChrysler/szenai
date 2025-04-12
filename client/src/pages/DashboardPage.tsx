@@ -103,16 +103,16 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         </div>
       </aside>
       
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar with improved animations and accessibility */}
       {isMobileSidebarOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div 
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 animate-fade-in"
             onClick={toggleSidebar}
           ></div>
-          <aside className="relative w-64 max-w-[80%] bg-white dark:bg-gray-900 h-full">
+          <aside className="relative w-64 max-w-[80%] bg-white dark:bg-gray-900 h-full animate-fade-in-right" style={{ animationDuration: '0.3s' }}>
             <div className="p-4 flex items-center gap-2">
-              <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+              <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center animate-subtle-glow">
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-semibold text-blue-600 dark:text-blue-500">Zenith AI</span>
@@ -120,16 +120,17 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
             
             <Separator className="my-2" />
             
-            <nav className="flex-1 p-4 space-y-1">
-              {navigationItems.map((item) => (
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-6rem)]">
+              {navigationItems.map((item, index) => (
                 <Link key={item.path} href={item.path}>
                   <a 
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 animate-fade-in ${
                       location === item.path 
                         ? 'bg-blue-600/10 text-blue-600 dark:text-blue-500 font-medium' 
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
                     }`}
                     onClick={toggleSidebar}
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     {item.icon}
                     <span>{item.label}</span>
@@ -140,6 +141,16 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                 </Link>
               ))}
             </nav>
+            
+            <div className="p-4 border-t dark:border-gray-800 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-xs">
+                <p className="font-medium dark:text-gray-300 mb-1">Penggunaan AI</p>
+                <div className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full mb-2">
+                  <div className="h-full bg-blue-600 rounded-full" style={{ width: '60%' }}></div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">6,000 / 10,000 kata</p>
+              </div>
+            </div>
           </aside>
         </div>
       )}

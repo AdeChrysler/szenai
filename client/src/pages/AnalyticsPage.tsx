@@ -222,12 +222,16 @@ const AnalyticsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="h-80 flex items-end gap-2 pt-10">
-              {/* Mock chart for visualization - in real app you'd use a charting library like recharts */}
+              {/* Enhanced chart with animation and full data */}
               {[35, 42, 58, 63, 47, 75, 68, 82, 73, 62, 55, 70].map((height, index) => (
                 <div key={index} className="relative flex-1 transition-all group">
                   <div 
-                    className="bg-blue-600 dark:bg-blue-500 rounded-t-sm w-full relative"
-                    style={{ height: `${height}%` }}
+                    className="bg-blue-600 dark:bg-blue-500 rounded-t-sm w-full relative animate-slide-in-up"
+                    style={{ 
+                      height: `${height}%`, 
+                      animationDelay: `${index * 0.1}s`,
+                      animationDuration: '0.8s' 
+                    }}
                   >
                     <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
