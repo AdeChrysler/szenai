@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import LoginPage from "./pages/LoginPage";
 import ChatPage from "./pages/ChatPage";
+import LandingPage from "./pages/LandingPage";
+import DashboardPage from "./pages/DashboardPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useEffect } from "react";
 
@@ -27,14 +29,8 @@ const ProtectedRoute = ({ component: Component }: { component: React.FC }) => {
 };
 
 function Router() {
-  const { user, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      setLocation("/chat");
-    }
-  }, [user, isLoading, setLocation]);
+  // We're not auto-redirecting anymore to allow the landing page to be visible
+  const { user } = useAuth();
 
   return (
     <Switch>
@@ -42,15 +38,10 @@ function Router() {
       <Route path="/chat">
         <ProtectedRoute component={ChatPage} />
       </Route>
-      <Route path="/">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-screen">Loading...</div>
-        ) : user ? (
-          <ProtectedRoute component={ChatPage} />
-        ) : (
-          <LoginPage />
-        )}
+      <Route path="/dashboard">
+        <ProtectedRoute component={DashboardPage} />
       </Route>
+      <Route path="/" component={LandingPage} />
       <Route component={NotFound} />
     </Switch>
   );

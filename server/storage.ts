@@ -10,6 +10,7 @@ export interface IStorage {
   // Message methods
   createMessage(message: InsertMessage): Promise<Message>;
   getMessagesBySession(userId: number, sessionId: string): Promise<Message[]>;
+  getAllUserMessages(userId: number): Promise<Message[]>;
 }
 
 // PostgreSQL-based storage implementation
@@ -59,6 +60,15 @@ export class DatabaseStorage implements IStorage {
     const result = await pool.query(
       'SELECT * FROM messages WHERE user_id = $1 AND session_id = $2 ORDER BY created_at ASC',
       [userId, sessionId]
+    );
+    
+    return result.rows;
+  }
+  
+  async getAllUserMessages(userId: number): Promise<Message[]> {
+    const result = await pool.query(
+      'SELECT * FROM messages WHERE user_id = $1 ORDER BY created_at ASC',
+      [userId]
     );
     
     return result.rows;

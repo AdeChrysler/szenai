@@ -141,9 +141,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(supabaseUser.id);
       
       try {
-        // Get messages from database via our storage interface
-        const messages = await storage.getMessagesBySession(userId, sessionId);
-        return res.status(200).json({ messages: messages || [] });
+        // If sessionId is 'all', get all messages for the user
+        if (sessionId === 'all') {
+          // Get all messages for the user
+          const messages = await storage.getAllUserMessages(userId);
+          return res.status(200).json({ messages: messages || [] });
+        } else {
+          // Get messages from database via our storage interface for a specific session
+          const messages = await storage.getMessagesBySession(userId, sessionId);
+          return res.status(200).json({ messages: messages || [] });
+        }
       } catch (error) {
         console.warn('Error fetching messages:', error);
         // In case of error, return empty array
