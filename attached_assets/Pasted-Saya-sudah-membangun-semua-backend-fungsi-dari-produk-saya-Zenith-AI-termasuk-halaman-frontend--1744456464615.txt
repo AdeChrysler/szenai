@@ -1,0 +1,87 @@
+Saya sudah membangun semua backend & fungsi dari produk saya (Zenith AI), termasuk halaman frontend-nya. Tapi kontennya jelek dan desainnya belum clean.
+
+Tolong bantu saya perbaiki landing page dengan gaya seperti gambar berikut ini:
+
+✨ **Referensi Gaya:**
+- Full dark mode (gradasi biru gelap ke hitam)
+- Font putih dan abu muda
+- Heading besar, tebal, sans-serif
+- Komponen card dengan border-glow atau efek hover terang
+- Button biru neon dengan radius besar dan hover lebih terang
+- Navigasi sticky dan bersih
+- Grid section dengan icon dan angka besar (statistik)
+
+Framework: **Next.js + TailwindCSS**
+
+Gunakan Bahasa Indonesia untuk semua kontennya, dengan tone yang profesional tapi tetap ringan dan manusiawi.
+
+---
+
+### 🎯 Tujuan Landing Page:
+- Menjelaskan Zenith AI dengan jelas (bukan chatbot biasa)
+- Mendorong user untuk daftar, request demo, atau coba gratis
+- Tunjukkan hasil nyata, fitur, dan ajakan aksi
+
+---
+
+### 📄 Struktur Halaman:
+#### 🧭 Navbar (sticky)
+- Logo (Zenith AI)
+- Link ke: Fitur, Cara Kerja, Testimoni, Kontak
+- Tombol CTA biru neon: “Coba Gratis”
+
+#### 🦾 Hero Section
+- Heading besar: “AI Chatbot untuk Mengubah Chat Jadi Closing”
+- Subheading: “Zenith AI bantu Anda membalas chat WhatsApp & DM 24 jam nonstop, kumpulkan leads, dan bantu closing otomatis.”
+- Tombol: “Coba Gratis 14 Hari” dan “Lihat Demo”
+
+#### 📊 Statistik Section (Grid 4 kolom)
+- $2M+ total transaksi diproses
+- 10.000+ leads terkumpul
+- 250+ bisnis aktif
+- 50+ mitra integrator
+
+#### 💡 Masalah UMKM Section
+- “Leads datang tapi nggak ke-follow up”
+- “CS capek dan lambat balas”
+- “Data chat tercecer dan nggak rapi”
+- Ikon di setiap poin + gaya card gelap dengan border terang
+
+#### 🚀 Solusi Zenith AI
+- Satu per satu fitur utama dalam card horizontal
+- Judul + ikon + kalimat pendek
+  - “Balas otomatis FAQ via WhatsApp & IG”
+  - “CRM penyimpanan histori chat”
+  - “Follow up leads tanpa manusia”
+  - “Integrasi Notion / Google Sheets”
+
+#### 👥 Testimoni
+- Carousel 3 testimoni dari bisnis fiktif:
+  - “Kopi Nusantara: leads naik 3x, CS bisa fokus ke closing.”
+  - “Klinik Ratu Sehat: waktu balas turun dari 4 jam ke 5 menit.”
+  - “Digital Class: closing otomatis tiap hari.”
+
+#### 💰 Pricing Section
+- 3 Card pricing (Free, Pro, Enterprise)
+- Tambahkan fitur per paket
+- Tombol “Coba Gratis” di setiap card
+
+#### ✅ CTA Penutup
+- “Jangan biarkan pelanggan nunggu. Mulai dengan Zenith AI hari ini.”
+- Tombol besar: “Coba Gratis Sekarang”
+
+#### 📞 Footer
+- Link: Tentang Kami, Dokumentasi, Kebijakan Privasi
+- Social icons
+- Copyright
+
+---
+
+### 🧠 Note tambahan:
+- Gunakan TailwindCSS untuk styling
+- Jangan pakai lorem ipsum, gunakan dummy text Bahasa Indonesia
+- Gunakan `bg-gradient-to-b from-[#0f172a] to-[#020617]`
+- Font besar, spacing longgar, tombol neon glow hover
+- Semua button bulat (rounded-xl)
+- Pastikan layout mobile-friendly dan smooth
+
