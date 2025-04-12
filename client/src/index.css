@@ -11,3 +11,12 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-80px * 10 - 6rem * 10));
+  }
+}
