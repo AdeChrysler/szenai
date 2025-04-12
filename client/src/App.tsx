@@ -7,6 +7,10 @@ import LoginPage from "./pages/LoginPage";
 import ChatPage from "./pages/ChatPage";
 import LandingPage from "./pages/LandingPage";
 import DashboardPage from "./pages/DashboardPage";
+import FiturPage from "./pages/FiturPage";
+import CaraKerjaPage from "./pages/CaraKerjaPage";
+import SuccessStoriesPage from "./pages/SuccessStoriesPage";
+import KontakPage from "./pages/KontakPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useEffect } from "react";
 
