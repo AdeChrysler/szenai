@@ -31,7 +31,7 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login({ email, password });
       setLocation('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
@@ -50,7 +50,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-md border-blue-500/20 shadow-xl dark:bg-gray-900/90 backdrop-blur-sm">
+    <Card className="w-full max-w-md border-blue-500/20 shadow-xl bg-gray-900/90 backdrop-blur-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center text-white">Masuk ke Akun</CardTitle>
         <CardDescription className="text-center text-gray-300">
