@@ -1,61 +1,45 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Message } from '@/types/chat';
-import UserMenu from '@/components/UserMenu';
-import { DatabaseSetup } from '@/components/DatabaseSetup';
 import { 
+  LayoutDashboard, 
   MessageSquare, 
-  Calendar, 
-  Clock, 
-  BarChart4, 
-  ChevronRight, 
-  Plus, 
-  RefreshCcw,
+  Users, 
+  BarChart2, 
+  Share2, 
+  Settings, 
+  Bell, 
+  LogOut, 
   Moon,
   Sun,
-  User
+  Search,
+  ChevronRight,
+  ArrowUpRight,
+  Zap,
+  UserCircle
 } from 'lucide-react';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
 
-// Utility function to group sessions
-function groupMessagesBySession(messages: Message[]): Record<string, Message[]> {
-  const sessions: Record<string, Message[]> = {};
-  
-  messages.forEach(message => {
-    if (!sessions[message.session_id]) {
-      sessions[message.session_id] = [];
-    }
-    sessions[message.session_id].push(message);
-  });
-  
-  return sessions;
-}
-
-// Utility to format dates
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
-  }).format(date);
-}
-
-const DashboardPage: React.FC = () => {
+const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
-  // Toggle dark mode
+  const [location] = useLocation();
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+  
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -64,392 +48,541 @@ const DashboardPage: React.FC = () => {
     }
   }, [isDarkMode]);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  const navigationItems = [
+    { path: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" />, label: 'Dashboard' },
+    { path: '/chat', icon: <MessageSquare className="h-5 w-5" />, label: 'Riwayat Chat' },
+    { path: '/leads', icon: <Users className="h-5 w-5" />, label: 'Manajemen Leads' },
+    { path: '/analytics', icon: <BarChart2 className="h-5 w-5" />, label: 'Statistik' },
+    { path: '/integrations', icon: <Share2 className="h-5 w-5" />, label: 'Integrasi' },
+    { path: '/settings', icon: <Settings className="h-5 w-5" />, label: 'Pengaturan' },
+  ];
+
+  const toggleSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
 
-  // Fetch all chat history for the user
-  const { 
-    data: allChatHistory, 
-    isLoading, 
-    refetch 
-  } = useQuery<{ messages: Message[] }>({
-    queryKey: ['/api/chat/history', user?.id, { sessionId: 'all' }],
-    enabled: !!user,
-  });
+  return (
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-950">
+      {/* Sidebar for desktop */}
+      <aside className="z-30 hidden md:flex md:w-64 flex-col fixed h-full dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
+        <div className="p-4 flex items-center gap-2">
+          <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+            <Zap className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-semibold text-blue-600 dark:text-blue-500">Zenith AI</span>
+        </div>
+        
+        <Separator className="my-2" />
+        
+        <nav className="flex-1 p-4 space-y-1">
+          {navigationItems.map((item) => (
+            <Link key={item.path} href={item.path}>
+              <a className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                location === item.path 
+                  ? 'bg-blue-600/10 text-blue-600 dark:text-blue-500 font-medium' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
+              }`}>
+                {item.icon}
+                <span>{item.label}</span>
+                {location === item.path && (
+                  <div className="ml-auto w-1.5 h-5 bg-blue-600 rounded-full"></div>
+                )}
+              </a>
+            </Link>
+          ))}
+        </nav>
+        
+        <div className="p-4 mt-auto">
+          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-3 text-xs">
+            <p className="font-medium dark:text-gray-300 mb-1">Penggunaan AI</p>
+            <div className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full mb-2">
+              <div className="h-full bg-blue-600 rounded-full" style={{ width: '60%' }}></div>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400">6,000 / 10,000 kata</p>
+          </div>
+        </div>
+      </aside>
+      
+      {/* Mobile sidebar */}
+      {isMobileSidebarOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-black/50"
+            onClick={toggleSidebar}
+          ></div>
+          <aside className="relative w-64 max-w-[80%] bg-white dark:bg-gray-900 h-full">
+            <div className="p-4 flex items-center gap-2">
+              <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                <Zap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-semibold text-blue-600 dark:text-blue-500">Zenith AI</span>
+            </div>
+            
+            <Separator className="my-2" />
+            
+            <nav className="flex-1 p-4 space-y-1">
+              {navigationItems.map((item) => (
+                <Link key={item.path} href={item.path}>
+                  <a 
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                      location === item.path 
+                        ? 'bg-blue-600/10 text-blue-600 dark:text-blue-500 font-medium' 
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
+                    }`}
+                    onClick={toggleSidebar}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                    {location === item.path && (
+                      <div className="ml-auto w-1.5 h-5 bg-blue-600 rounded-full"></div>
+                    )}
+                  </a>
+                </Link>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      )}
+      
+      {/* Main content */}
+      <div className="md:ml-64 flex flex-col flex-1">
+        {/* Header */}
+        <header className="sticky top-0 z-20 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between h-16 px-4">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={toggleSidebar} 
+                className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 dark:text-gray-400"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              
+              <div className="relative w-64 hidden md:block">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                <Input 
+                  placeholder="Cari..." 
+                  className="pl-8 bg-gray-100 dark:bg-gray-800 border-none focus-visible:ring-blue-500"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative"
+                      onClick={() => console.log('Notifications clicked')}
+                    >
+                      <Bell className="h-5 w-5" />
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+                        3
+                      </span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Notifikasi</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                    >
+                      {isDarkMode ? (
+                        <Sun className="h-5 w-5" />
+                      ) : (
+                        <Moon className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isDarkMode ? 'Mode Terang' : 'Mode Gelap'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <Separator orientation="vertical" className="h-8" />
+              
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.profile_image} alt={user?.email} />
+                  <AvatarFallback className="bg-blue-600 text-white">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="hidden md:block">
+                  <p className="text-sm font-medium">{user?.email?.split('@')[0] || 'User'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">UMKM Pro</p>
+                </div>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={logout}
+                      >
+                        <LogOut className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Keluar</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+          </div>
+        </header>
+        
+        {/* Page content */}
+        <main className="flex-1 p-4 md:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
 
-  const allMessages = allChatHistory?.messages || [];
-  const sessions = groupMessagesBySession(allMessages);
-  const sessionCount = Object.keys(sessions).length;
-  const messageCount = allMessages.length;
-  
-  // Calculate stats
-  const userMessageCount = allMessages.filter(m => m.role === 'user').length;
-  const assistantMessageCount = allMessages.filter(m => m.role === 'assistant').length;
-  
-  // Get most recent session
-  const sortedSessions = Object.entries(sessions).sort((a, b) => {
-    const aDate = new Date(a[1][a[1].length - 1].created_at);
-    const bDate = new Date(b[1][b[1].length - 1].created_at);
-    return bDate.getTime() - aDate.getTime();
-  });
+// Dashboard Home
+const DashboardPage: React.FC = () => {
+  // Sample data for dashboard
+  const statCards = [
+    { 
+      title: 'Total Leads', 
+      value: '157', 
+      change: '+12%', 
+      isPositive: true,
+      description: 'vs. minggu lalu',
+      icon: <Users className="h-5 w-5 text-blue-600" />
+    },
+    { 
+      title: 'Percakapan Aktif', 
+      value: '43', 
+      change: '+7%',
+      isPositive: true, 
+      description: 'vs. minggu lalu',
+      icon: <MessageSquare className="h-5 w-5 text-green-600" />
+    },
+    { 
+      title: 'Konversi Rata-rata', 
+      value: '28%', 
+      change: '-2%',
+      isPositive: false, 
+      description: 'vs. minggu lalu',
+      icon: <BarChart2 className="h-5 w-5 text-orange-600" />
+    },
+    { 
+      title: 'Waktu Respons', 
+      value: '2.3 menit', 
+      change: '-12%',
+      isPositive: true, 
+      description: 'vs. minggu lalu',
+      icon: <Zap className="h-5 w-5 text-purple-600" />
+    }
+  ];
 
-  if (!user) return null;
+  const recentChats = [
+    { 
+      name: 'Budi Santoso', 
+      time: '2 jam yang lalu', 
+      message: 'Apakah bisa custom untuk jumlah user?',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Rina Wati', 
+      time: '3 jam yang lalu', 
+      message: 'Saya tertarik dengan paket premium',
+      status: 'belum',
+      platform: 'Instagram'
+    },
+    { 
+      name: 'Ahmad Fauzi', 
+      time: '5 jam yang lalu', 
+      message: 'Tolong info harga untuk 10 agent',
+      status: 'terjawab',
+      platform: 'WhatsApp'
+    },
+    { 
+      name: 'Dewi Lestari', 
+      time: '7 jam yang lalu', 
+      message: 'Apakah ada fitur untuk integrasi dengan toko online?',
+      status: 'terjawab',
+      platform: 'Instagram'
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Link href="/">
-                <span className="text-xl font-bold text-primary-600 dark:text-primary-400 cursor-pointer">
-                  AI Chat
-                </span>
-              </Link>
-            </div>
-            <nav className="ml-6 space-x-4 hidden md:flex">
-              <Link href="/dashboard">
-                <span className="text-gray-900 dark:text-white font-medium px-3 py-2 rounded-md border-b-2 border-primary-500 cursor-pointer">
-                  Dashboard
-                </span>
-              </Link>
-              <Link href="/chat">
-                <span className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 cursor-pointer">
-                  Chat
-                </span>
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </button>
-            
-            {/* User dropdown */}
-            <div className="relative">
-              <UserMenu user={user} onSignOut={logout} />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Database Setup Component */}
-      <div className="px-4 sm:px-6 lg:px-8 py-4">
-        <DatabaseSetup />
-      </div>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <div className="flex space-x-4">
-            <Button 
-              onClick={() => refetch()} 
-              variant="outline" 
-              size="sm"
-              className="flex items-center"
-            >
-              <RefreshCcw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-            <Link href="/chat">
-              <Button size="sm" className="flex items-center">
-                <Plus className="h-4 w-4 mr-2" />
-                New Chat
-              </Button>
-            </Link>
-          </div>
+    <DashboardLayout>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400">Selamat datang kembali di Zenith AI</p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="w-full max-w-md mx-auto">
-            <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
-            <TabsTrigger value="history" className="flex-1">Chat History</TabsTrigger>
-            <TabsTrigger value="stats" className="flex-1">Statistics</TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Conversations
-                  </CardTitle>
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{sessionCount}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {messageCount} total messages
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Active Since
-                  </CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {allMessages.length > 0 
-                      ? new Date(allMessages[0].created_at).toLocaleDateString() 
-                      : 'No activity yet'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {allMessages.length > 0 
-                      ? `First message on ${formatDate(allMessages[0].created_at)}` 
-                      : 'Start your first chat'}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Recent Activity
-                  </CardTitle>
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {allMessages.length > 0 
-                      ? new Date(allMessages[allMessages.length - 1].created_at).toLocaleDateString() 
-                      : 'No activity yet'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {allMessages.length > 0 
-                      ? `Last message on ${formatDate(allMessages[allMessages.length - 1].created_at)}` 
-                      : 'Start your first chat'}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Conversations */}
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Conversations</CardTitle>
-                <CardDescription>
-                  Your most recent chat sessions
-                </CardDescription>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {statCards.map((card, index) => (
+            <Card key={index} className="dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {card.title}
+                </CardTitle>
+                <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
+                  {card.icon}
+                </div>
               </CardHeader>
               <CardContent>
-                {isLoading ? (
-                  <div className="text-center py-4">Loading your conversations...</div>
-                ) : sortedSessions.length > 0 ? (
-                  <div className="space-y-4">
-                    {sortedSessions.slice(0, 5).map(([sessionId, messages]) => {
-                      const lastMessage = messages[messages.length - 1];
-                      const date = new Date(lastMessage.created_at);
-                      return (
-                        <Link href={`/chat?session=${sessionId}`} key={sessionId}>
-                          <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
-                            <div className="flex items-center space-x-4">
-                              <div className="bg-primary-100 dark:bg-primary-900 p-2 rounded-full">
-                                <MessageSquare className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 dark:text-white">
-                                  Session {sessionId.substring(0, 8)}...
-                                </h4>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md truncate">
-                                  {lastMessage.content}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                              <Badge variant="outline">
-                                {messages.length} messages
-                              </Badge>
-                              <span className="text-sm text-gray-500">
-                                {date.toLocaleDateString()}
-                              </span>
-                              <ChevronRight className="h-5 w-5 text-gray-400" />
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                    {sortedSessions.length > 5 && (
-                      <div className="text-center mt-4">
-                        <Button variant="link" onClick={() => setActiveTab('history')}>
-                          View all conversations
-                        </Button>
+                <div className="text-2xl font-bold">{card.value}</div>
+                <div className="flex items-center mt-1">
+                  <span className={`text-xs font-medium ${card.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                    {card.change}
+                  </span>
+                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                    {card.description}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        {/* Chart and Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Chart */}
+          <Card className="lg:col-span-2 dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle>Aktivitas Chat</CardTitle>
+              <CardDescription>7 hari terakhir</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80 flex items-end gap-2 pt-10">
+                {[40, 65, 50, 80, 75, 90, 60].map((height, index) => (
+                  <div key={index} className="relative flex-1 transition-all">
+                    <div 
+                      className="bg-blue-600 rounded-t-md w-full"
+                      style={{ height: `${height}%` }}
+                    ></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
+                      {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][index]}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Recent Activity */}
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-center">
+                <CardTitle>Percakapan Terbaru</CardTitle>
+                <Link href="/chat">
+                  <Button variant="link" className="h-auto p-0 text-blue-600">
+                    Lihat semua
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentChats.map((chat, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                        {chat.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">{chat.name}</p>
+                        <span className="text-xs text-gray-500">{chat.time}</span>
                       </div>
-                    )}
+                      <p className="text-xs text-gray-500 truncate">{chat.message}</p>
+                      <div className="flex gap-2">
+                        <Badge variant={chat.status === 'terjawab' ? 'outline' : 'secondary'} className="text-[10px] h-5">
+                          {chat.status === 'terjawab' ? 'Terjawab' : 'Perlu Ditindak'}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] h-5">
+                          {chat.platform}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No conversations yet</h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">Start your first chat to see your conversation history</p>
-                    <Link href="/chat">
-                      <Button>Start a new chat</Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* History Tab */}
-          <TabsContent value="history" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>All Conversations</CardTitle>
-                <CardDescription>
-                  Your complete chat history
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="text-center py-4">Loading your conversations...</div>
-                ) : sortedSessions.length > 0 ? (
-                  <div className="space-y-4">
-                    {sortedSessions.map(([sessionId, messages]) => {
-                      const lastMessage = messages[messages.length - 1];
-                      const firstMessage = messages[0];
-                      const startDate = new Date(firstMessage.created_at);
-                      const endDate = new Date(lastMessage.created_at);
-                      return (
-                        <Link href={`/chat?session=${sessionId}`} key={sessionId}>
-                          <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
-                            <div className="flex items-center space-x-4">
-                              <div className="bg-primary-100 dark:bg-primary-900 p-2 rounded-full">
-                                <MessageSquare className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 dark:text-white">
-                                  Session {sessionId.substring(0, 8)}...
-                                </h4>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  Started: {startDate.toLocaleDateString()} at {startDate.toLocaleTimeString()}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                              <Badge variant="outline">
-                                {messages.length} messages
-                              </Badge>
-                              <span className="text-sm text-gray-500">
-                                Last activity: {endDate.toLocaleDateString()}
-                              </span>
-                              <ChevronRight className="h-5 w-5 text-gray-400" />
-                            </div>
-                          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Hot Leads */}
+        <Card className="dark:border-gray-800 dark:bg-gray-900">
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-center">
+              <CardTitle>Leads Terpanas</CardTitle>
+              <Link href="/leads">
+                <Button variant="link" className="h-auto p-0 text-blue-600">
+                  Kelola semua leads
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left [&>th]:py-3 [&>th]:px-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-800">
+                    <th>Nama</th>
+                    <th>Kontak</th>
+                    <th>Sumber</th>
+                    <th>Status</th>
+                    <th>Terakhir Aktif</th>
+                    <th className="text-right">Tindakan</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {[
+                    {
+                      name: 'Joko Widodo',
+                      contact: '081234567890',
+                      source: 'WhatsApp',
+                      status: 'Hot',
+                      lastActive: '1 jam lalu'
+                    },
+                    {
+                      name: 'Siti Badriah',
+                      contact: '089876543210',
+                      source: 'Instagram',
+                      status: 'Hot',
+                      lastActive: '3 jam lalu'
+                    },
+                    {
+                      name: 'Hendra Gunawan',
+                      contact: '085111222333',
+                      source: 'Web Chat',
+                      status: 'Hot',
+                      lastActive: '6 jam lalu'
+                    },
+                  ].map((lead, index) => (
+                    <tr key={index} className="border-b dark:border-gray-800 [&>td]:py-3 [&>td]:px-2">
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <UserCircle className="w-7 h-7 text-blue-600" />
+                          <span>{lead.name}</span>
+                        </div>
+                      </td>
+                      <td>{lead.contact}</td>
+                      <td>
+                        <Badge variant="outline" className="font-normal">
+                          {lead.source}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge className="bg-red-600 hover:bg-red-700">
+                          {lead.status}
+                        </Badge>
+                      </td>
+                      <td className="text-gray-500">{lead.lastActive}</td>
+                      <td className="text-right">
+                        <Link href={`/leads/${index}`}>
+                          <Button size="sm" variant="ghost" className="px-2 h-8 text-xs">
+                            Detail
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
                         </Link>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No conversations yet</h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">Start your first chat to see your conversation history</p>
-                    <Link href="/chat">
-                      <Button>Start a new chat</Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Stats Tab */}
-          <TabsContent value="stats" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Usage Statistics</CardTitle>
-                <CardDescription>
-                  Overview of your conversation metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                {/* Message Distribution */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4 flex items-center">
-                    <BarChart4 className="mr-2 h-5 w-5" />
-                    Message Distribution
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Your Messages</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{userMessageCount}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {messageCount > 0 ? `${Math.round(userMessageCount / messageCount * 100)}% of total` : 'No messages yet'}
-                        </div>
-                        <div className="mt-4 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-blue-500 rounded-full" 
-                            style={{ width: `${messageCount > 0 ? userMessageCount / messageCount * 100 : 0}%` }}
-                          ></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">AI Responses</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{assistantMessageCount}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {messageCount > 0 ? `${Math.round(assistantMessageCount / messageCount * 100)}% of total` : 'No messages yet'}
-                        </div>
-                        <div className="mt-4 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-purple-500 rounded-full" 
-                            style={{ width: `${messageCount > 0 ? assistantMessageCount / messageCount * 100 : 0}%` }}
-                          ></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                {/* User Stats */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4 flex items-center">
-                    <User className="mr-2 h-5 w-5" />
-                    User Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Email</div>
-                      <div className="font-medium">{user.email}</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Campaign Performance */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle>Status Integrasi</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { name: 'WhatsApp Business', status: 'connected', statusText: 'Terhubung' },
+                  { name: 'Instagram DM', status: 'connected', statusText: 'Terhubung' },
+                  { name: 'Google Sheets', status: 'not-connected', statusText: 'Tidak Terhubung' },
+                  { name: 'Notion', status: 'not-connected', statusText: 'Tidak Terhubung' },
+                ].map((integration, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        integration.status === 'connected' ? 'bg-green-500' : 'bg-gray-500'
+                      }`}></div>
+                      <span>{integration.name}</span>
                     </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">User ID</div>
-                      <div className="font-medium">{user.id}</div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Account Created</div>
-                      <div className="font-medium">{user.created_at ? formatDate(user.created_at) : 'Not available'}</div>
-                    </div>
+                    <Badge variant={integration.status === 'connected' ? 'outline' : 'secondary'}>
+                      {integration.statusText}
+                    </Badge>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Link href="/integrations" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-600/10 dark:border-blue-500 dark:text-blue-500"
+                >
+                  Kelola Integrasi
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+          
+          <Card className="dark:border-gray-800 dark:bg-gray-900">
+            <CardHeader>
+              <CardTitle>Chatbot Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { metric: 'Response Rate', value: '95%' },
+                  { metric: 'Rata-rata Waktu Respons', value: '2.5 menit' },
+                  { metric: 'Kepuasan Pelanggan', value: '4.8/5.0' },
+                  { metric: 'Akurasi Jawaban', value: '92%' },
+                ].map((metric, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">{metric.metric}</span>
+                    <span className="font-medium">{metric.value}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Link href="/analytics" className="w-full">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  Lihat Analisis Lengkap
+                  <ArrowUpRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 };
 
