@@ -110,9 +110,9 @@ const ChatPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Riwayat Chat</h1>
-          <p className="text-gray-500 dark:text-gray-400">Kelola semua percakapan dengan pelanggan</p>
+        <div className="flex flex-col gap-2 animate-fade-in">
+          <h1 className="text-2xl font-bold animate-fade-in-left">Riwayat Chat</h1>
+          <p className="text-gray-500 dark:text-gray-400 animate-fade-in" style={{ animationDelay: '0.1s' }}>Kelola semua percakapan dengan pelanggan</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">

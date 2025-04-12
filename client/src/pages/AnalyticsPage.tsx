@@ -86,31 +86,48 @@ const AnalyticsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Statistik</h1>
-          <p className="text-gray-500 dark:text-gray-400">Analisis performa chatbot, konversi, dan aktivitas pengguna</p>
+        <div className="flex flex-col gap-2 animate-fade-in">
+          <h1 className="text-2xl font-bold animate-fade-in-left">Statistik</h1>
+          <p className="text-gray-500 dark:text-gray-400 animate-fade-in" style={{ animationDelay: '0.1s' }}>Analisis performa chatbot dan konversi leads</p>
         </div>
 
-        {/* Time range selector and export button */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            <Select defaultValue="30d">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Pilih rentang waktu" />
+        {/* Filter Controls */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-gray-900 p-4 rounded-lg border dark:border-gray-800 shadow-sm transition-all hover:shadow-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center w-full sm:w-auto">
+            <Select defaultValue="7days">
+              <SelectTrigger className="w-full sm:w-[180px] transition-all hover:border-blue-400 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <Calendar className="h-4 w-4 mr-2" />
+                <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">7 hari terakhir</SelectItem>
-                <SelectItem value="30d">30 hari terakhir</SelectItem>
-                <SelectItem value="90d">90 hari terakhir</SelectItem>
-                <SelectItem value="custom">Kustom...</SelectItem>
+              <SelectContent className="animate-fade-in-scale">
+                <SelectItem value="today">Hari Ini</SelectItem>
+                <SelectItem value="yesterday">Kemarin</SelectItem>
+                <SelectItem value="7days">7 Hari Terakhir</SelectItem>
+                <SelectItem value="30days">30 Hari Terakhir</SelectItem>
+                <SelectItem value="custom">Rentang Kustom</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select defaultValue="all">
+              <SelectTrigger className="w-full sm:w-[180px] transition-all hover:border-blue-400 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="animate-fade-in-scale">
+                <SelectItem value="all">Semua Platform</SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="webchat">Web Chat</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <Button variant="outline" size="sm" className="text-xs">
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export Data
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full sm:w-auto transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-400 animate-fade-in"
+            style={{ animationDelay: '0.5s' }}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download Laporan
           </Button>
         </div>
 

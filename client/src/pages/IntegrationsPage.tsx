@@ -207,27 +207,27 @@ const IntegrationsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Integrasi</h1>
-          <p className="text-gray-500 dark:text-gray-400">Hubungkan Zenith AI dengan aplikasi dan layanan lain</p>
+        <div className="flex flex-col gap-2 animate-fade-in">
+          <h1 className="text-2xl font-bold animate-fade-in-left">Integrasi</h1>
+          <p className="text-gray-500 dark:text-gray-400 animate-fade-in" style={{ animationDelay: '0.1s' }}>Hubungkan Zenith AI dengan aplikasi dan layanan lain</p>
         </div>
         
-        <Card className="overflow-hidden dark:border-gray-800 dark:bg-gray-900">
+        <Card className="overflow-hidden dark:border-gray-800 dark:bg-gray-900 dashboard-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-            <CardTitle>Status Integrasi</CardTitle>
-            <CardDescription className="text-blue-100">
+            <CardTitle className="animate-fade-in-left" style={{ animationDelay: '0.3s' }}>Status Integrasi</CardTitle>
+            <CardDescription className="text-blue-100 animate-fade-in" style={{ animationDelay: '0.4s' }}>
               Pantau koneksi dengan aplikasi dan layanan pihak ketiga
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center">
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:scale-[1.02] animate-fade-in" style={{ animationDelay: '0.5s' }}>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Total Integrasi</p>
-                <p className="text-3xl font-bold mt-1">{integrations.length}</p>
+                <p className="text-3xl font-bold mt-1 animate-slide-in-up" style={{ animationDelay: '0.7s' }}>{integrations.length}</p>
               </div>
-              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center">
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:scale-[1.02] animate-fade-in" style={{ animationDelay: '0.6s' }}>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Terhubung</p>
-                <p className="text-3xl font-bold mt-1">{integrations.filter(i => i.isConnected).length}</p>
+                <p className="text-3xl font-bold mt-1 animate-slide-in-up" style={{ animationDelay: '0.8s' }}>{integrations.filter(i => i.isConnected).length}</p>
               </div>
               <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center">
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Aktif</p>

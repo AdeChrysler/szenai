@@ -42,6 +42,22 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -163,6 +179,18 @@
   animation: fadeInScale 0.6s ease-out forwards;
 }
 
+.animate-slide-in-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-pop {
+  animation: pop 0.4s ease-out forwards;
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -187,6 +215,27 @@
   animation: subtleGlow 3s infinite;
 }
 
+/* Staggered animation delays */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
 .glass-effect {
   @apply backdrop-blur-md bg-opacity-20 bg-blue-950 border border-blue-500/20;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -196,6 +245,41 @@
 .glass-effect:hover {
   @apply bg-opacity-30 border-blue-500/30;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+/* Dashboard card animations */
+.dashboard-card {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Table row animations */
+.table-row-animate {
+  transition: all 0.2s ease-out;
+}
+
+.table-row-animate:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Transition utilities */
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all-300 {
+  transition: all 0.3s ease;
+}
+
+.hover-scale-102:hover {
+  transform: scale(1.02);
 }
 
 .thin-scrollbar::-webkit-scrollbar {

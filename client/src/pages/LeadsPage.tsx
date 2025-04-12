@@ -59,8 +59,17 @@ interface Lead {
 
 const LeadsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isAddLeadOpen, setIsAddLeadOpen] = useState<false | 'add' | 'edit'>(false);
-  const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const [isAddLeadOpen, setIsAddLeadOpen] = useState<boolean>(false);
+  const [newLead, setNewLead] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    source: 'website',
+    status: 'cold',
+    notes: '',
+  });
+
 
   // Sample data
   const leads: Lead[] = [
@@ -168,59 +177,54 @@ const LeadsPage: React.FC = () => {
   };
 
   const handleAddLead = () => {
-    setIsAddLeadOpen('add');
-    setEditingLead(null);
+    setIsAddLeadOpen(true);
   };
 
-  const handleEditLead = (lead: Lead) => {
-    setIsAddLeadOpen('edit');
-    setEditingLead(lead);
-  };
-
-  const closeDialog = () => {
+  const handleCloseDialog = () => {
     setIsAddLeadOpen(false);
-    setEditingLead(null);
+    setNewLead({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      source: 'website',
+      status: 'cold',
+      notes: '',
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setNewLead({ ...newLead, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle lead submission here...
+    handleCloseDialog();
   };
 
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Manajemen Leads</h1>
-          <p className="text-gray-500 dark:text-gray-400">Kelola semua prospek dan kontak potensial</p>
-        </div>
-
-        {/* Actions bar */}
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div className="flex flex-1 gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input 
-                placeholder="Cari berdasarkan nama, email, atau no. telepon..." 
-                className="pl-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
-            </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in">
+          <div>
+            <h1 className="text-2xl font-bold animate-fade-in-left">Manajemen Leads</h1>
+            <p className="text-gray-500 dark:text-gray-400 animate-fade-in" style={{ animationDelay: '0.1s' }}>Kelola dan pantau semua prospek bisnis Anda</p>
           </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="text-xs">
-              <Download className="h-3.5 w-3.5 mr-1.5" />
-              Export
-            </Button>
-            <Button size="sm" className="text-xs bg-blue-600 hover:bg-blue-700" onClick={handleAddLead}>
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
+          <div className="flex gap-2 animate-fade-in-right" style={{ animationDelay: '0.2s' }}>
+            <Button variant="outline" size="icon" onClick={handleAddLead} className="transition-all hover:scale-105">
+              <Plus className="h-4 w-4 mr-2" />
               Tambah Lead
+            </Button>
+            <Button variant="outline" className="transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20">
+              <Download className="h-4 w-4 mr-2" />
+              Export
             </Button>
           </div>
         </div>
 
         {/* Lead summary cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           {[
             { label: 'Total Leads', count: leads.length, color: 'bg-gray-500' },
             { label: 'Hot Leads', count: leads.filter(l => l.status === 'hot').length, color: 'bg-red-600' },
@@ -228,7 +232,7 @@ const LeadsPage: React.FC = () => {
             { label: 'Cold Leads', count: leads.filter(l => l.status === 'cold').length, color: 'bg-blue-500' },
             { label: 'Customers', count: leads.filter(l => l.status === 'customer').length, color: 'bg-green-600' },
           ].map((stat, index) => (
-            <Card key={index} className="dark:border-gray-800 dark:bg-gray-900">
+            <Card key={index} className="dark:border-gray-800 dark:bg-gray-900 animate-slide-in-up" style={{ animationDelay: `${index * 0.1 + 0.4}s` }}>
               <CardContent className="p-4 flex flex-col items-center">
                 <div className={`${stat.color} w-3 h-3 rounded-full mb-2`}></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{stat.label}</p>
@@ -239,7 +243,7 @@ const LeadsPage: React.FC = () => {
         </div>
 
         {/* Leads table */}
-        <Card className="dark:border-gray-800 dark:bg-gray-900">
+        <Card className="dark:border-gray-800 dark:bg-gray-900 animate-fade-in" style={{ animationDelay: '0.5s' }}>
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">
               <CardTitle>Semua Leads</CardTitle>
@@ -267,7 +271,7 @@ const LeadsPage: React.FC = () => {
                 </thead>
                 <tbody className="text-sm">
                   {filteredLeads.map((lead) => (
-                    <tr key={lead.id} className="border-b dark:border-gray-800 [&>td]:py-3 [&>td]:px-2">
+                    <tr key={lead.id} className="border-b dark:border-gray-800 [&>td]:py-3 [&>td]:px-2 animate-fade-in" style={{ animationDelay: `${lead.id * 0.1}s` }}>
                       <td>
                         <div className="flex justify-center">
                           <Avatar className="h-8 w-8">
@@ -315,7 +319,6 @@ const LeadsPage: React.FC = () => {
                             variant="ghost" 
                             size="icon" 
                             className="h-7 w-7"
-                            onClick={() => handleEditLead(lead)}
                           >
                             <Edit className="h-3.5 w-3.5" />
                           </Button>
@@ -345,71 +348,55 @@ const LeadsPage: React.FC = () => {
       </div>
 
       {/* Add/Edit Lead Dialog */}
-      <Dialog open={!!isAddLeadOpen} onOpenChange={(open) => !open && closeDialog()}>
-        <DialogContent className="max-w-md">
+      <Dialog open={isAddLeadOpen} onOpenChange={setIsAddLeadOpen}>
+        <DialogContent className="max-w-md animate-fade-in-scale">
           <DialogHeader>
-            <DialogTitle>{isAddLeadOpen === 'edit' ? 'Edit Lead' : 'Tambah Lead Baru'}</DialogTitle>
+            <DialogTitle>Tambah Lead Baru</DialogTitle>
             <DialogDescription>
-              {isAddLeadOpen === 'edit' 
-                ? 'Perbarui informasi lead dalam database Anda.' 
-                : 'Tambahkan prospek baru ke dalam sistem.'}
+              Isi informasi lengkap lead baru di bawah ini.
             </DialogDescription>
           </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Nama Lengkap</Label>
-                <Input 
-                  id="name" 
-                  defaultValue={editingLead?.name || ''} 
-                  placeholder="Nama lengkap" 
-                />
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+                <Label htmlFor="firstName">Nama Depan</Label>
+                <Input id="firstName" name="firstName" value={newLead.firstName} onChange={handleChange} placeholder="Masukkan nama depan" className="transition-all focus:scale-[1.01]" />
               </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  defaultValue={editingLead?.email || ''} 
-                  placeholder="Email" 
-                />
+              <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.15s' }}>
+                <Label htmlFor="lastName">Nama Belakang</Label>
+                <Input id="lastName" name="lastName" value={newLead.lastName} onChange={handleChange} placeholder="Masukkan nama belakang" className="transition-all focus:scale-[1.01]" />
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="phone">No. Telepon</Label>
-                <Input 
-                  id="phone" 
-                  defaultValue={editingLead?.phone || ''} 
-                  placeholder="08xxxx" 
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="source">Sumber</Label>
-                <Select defaultValue={editingLead?.source || "website"}>
-                  <SelectTrigger id="source">
-                    <SelectValue placeholder="Pilih sumber" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="website">Website</SelectItem>
-                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="referral">Referral</SelectItem>
-                    <SelectItem value="other">Lainnya</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" name="email" value={newLead.email} onChange={handleChange} placeholder="email@example.com" className="transition-all focus:scale-[1.01]" />
             </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="status">Status</Label>
-              <Select defaultValue={editingLead?.status || "cold"}>
-                <SelectTrigger id="status">
-                  <SelectValue placeholder="Pilih status" />
+            <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.25s' }}>
+              <Label htmlFor="phone">No. Telepon</Label>
+              <Input id="phone" name="phone" value={newLead.phone} onChange={handleChange} placeholder="+62812345678" className="transition-all focus:scale-[1.01]" />
+            </div>
+            <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+              <Label htmlFor="source">Sumber</Label>
+              <Select value={newLead.source} onChange={handleChange} name="source">
+                <SelectTrigger className="transition-all hover:border-blue-400">
+                  <SelectValue placeholder="Pilih sumber lead" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="animate-fade-in-scale">
+                  <SelectItem value="website">Website</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="facebook">Facebook</SelectItem>
+                  <SelectItem value="referral">Referral</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.35s' }}>
+              <Label htmlFor="status">Status</Label>
+              <Select value={newLead.status} onChange={handleChange} name="status">
+                <SelectTrigger className="transition-all hover:border-blue-400">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="animate-fade-in-scale">
                   <SelectItem value="hot">Hot</SelectItem>
                   <SelectItem value="warm">Warm</SelectItem>
                   <SelectItem value="cold">Cold</SelectItem>
@@ -418,23 +405,14 @@ const LeadsPage: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex flex-col gap-2">
+            <div className="space-y-2 animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
               <Label htmlFor="notes">Catatan</Label>
-              <Textarea 
-                id="notes" 
-                defaultValue={editingLead?.notes || ''} 
-                placeholder="Tambahkan catatan tentang lead ini..." 
-                rows={3}
-              />
+              <Textarea id="notes" name="notes" value={newLead.notes} onChange={handleChange} placeholder="Tambahkan catatan tentang lead ini" className="transition-all focus:scale-[1.01]" />
             </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Batal</Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              {isAddLeadOpen === 'edit' ? 'Perbarui Lead' : 'Tambah Lead'}
-            </Button>
+          </form>
+          <DialogFooter className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <Button variant="outline" onClick={handleCloseDialog} className="transition-all hover:bg-gray-100">Batal</Button>
+            <Button type="submit" onClick={handleSubmit} className="transition-all hover:scale-105">Simpan Lead</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
