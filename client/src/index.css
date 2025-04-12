@@ -178,13 +178,6 @@
   background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
 }
 
-/* Fix for login inputs in dark mode */
-.dark input[type="email"],
-.dark input[type="password"],
-.dark input[type="text"] {
-  @apply bg-gray-800 border-gray-700 text-white;
-}
-
 /* Improve layout spacing */
 .content-section {
   margin-bottom: 1.5rem;
