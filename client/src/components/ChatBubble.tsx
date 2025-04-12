@@ -4,7 +4,6 @@ import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
-import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
   content: string;
@@ -15,7 +14,6 @@ interface Message {
 const ChatBubble: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [sessionId, setSessionId] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([
     {
       content: "Hi there! How can I help you today?",
@@ -26,19 +24,6 @@ const ChatBubble: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatCardRef = useRef<HTMLDivElement>(null);
-
-  // Initialize session ID when component mounts
-  useEffect(() => {
-    // Generate a new session ID or get from localStorage if exists
-    const storedSessionId = localStorage.getItem('chatSessionId');
-    if (storedSessionId) {
-      setSessionId(storedSessionId);
-    } else {
-      const newSessionId = uuidv4();
-      setSessionId(newSessionId);
-      localStorage.setItem('chatSessionId', newSessionId);
-    }
-  }, []);
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -80,10 +65,7 @@ const ChatBubble: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          chatInput: userMessage.content,
-          sessionId: sessionId
-        }),
+        body: JSON.stringify({ chatInput: userMessage.content }),
       });
       
       if (response.ok) {
