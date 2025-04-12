@@ -38,10 +38,10 @@ export default function LandingPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-500 rounded-xl text-lg px-8 shadow-lg shadow-blue-500/20" asChild>
-              <Link href="/daftar">Coba Gratis 14 Hari <ArrowRight className="ml-2" /></Link>
+              <Link href="/login">Coba Gratis 14 Hari <ArrowRight className="ml-2" /></Link>
             </Button>
             <Button variant="outline" size="lg" className="rounded-xl text-lg px-8 border-blue-500/50 hover:bg-blue-950/50" asChild>
-              <Link href="/demo">Lihat Demo</Link>
+              <Link href="/success-stories">Lihat Demo</Link>
             </Button>
           </div>
         </div>

@@ -41,6 +41,10 @@ function Router() {
       <Route path="/dashboard">
         <ProtectedRoute component={DashboardPage} />
       </Route>
+      <Route path="/fitur" component={FiturPage} />
+      <Route path="/cara-kerja" component={CaraKerjaPage} />
+      <Route path="/success-stories" component={SuccessStoriesPage} />
+      <Route path="/kontak" component={KontakPage} />
       <Route path="/" component={LandingPage} />
       <Route component={NotFound} />
     </Switch>
