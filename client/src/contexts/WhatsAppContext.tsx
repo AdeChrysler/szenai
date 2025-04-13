@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { WAHAApiClient, WAHAChat, WAHAMessage, wahaApiClient } from '@/lib/wahaApiClient';
+import { io, Socket } from 'socket.io-client';
 
 interface WhatsAppContextState {
   // Chats state
@@ -42,6 +43,42 @@ export function WhatsAppProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<WAHAMessage[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [messageError, setMessageError] = useState<string | null>(null);
+  
+  // Socket.IO connection
+  const [socket, setSocket] = useState<Socket | null>(null);
+  
+  // Initialize socket connection
+  useEffect(() => {
+    const socketInstance = io(window.location.origin);
+    setSocket(socketInstance);
+    
+    // Socket event listeners
+    socketInstance.on("connect", () => {
+      console.log("Connected to Socket.IO server:", socketInstance.id);
+    });
+    
+    socketInstance.on("whatsapp_update", (data) => {
+      if (data.chatId === selectedChatId) {
+        console.log("Real-time message update received");
+        refreshMessages();
+      } else {
+        // If message is for another chat, refresh chats to update last message
+        refreshChats();
+      }
+    });
+    
+    socketInstance.on("chats_refresh_needed", () => {
+      refreshChats();
+    });
+    
+    socketInstance.on("disconnect", () => {
+      console.log("Disconnected from Socket.IO server");
+    });
+    
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [selectedChatId]);
   
   // Load chats on mount
   useEffect(() => {
@@ -105,9 +142,12 @@ export function WhatsAppProvider({ children }: { children: React.ReactNode }) {
     if (!selectedChatId || !text.trim()) return;
     
     try {
+      // Generate a consistent temporary ID to properly track this message
+      const tempId = `temp-${Date.now()}`;
+      
       // Optimistic update with a temporary message
       const tempMessage: WAHAMessage = {
-        id: `temp-${Date.now()}`,
+        id: tempId,
         timestamp: Math.floor(Date.now() / 1000),
         from: 'me',
         fromMe: true,
@@ -115,23 +155,39 @@ export function WhatsAppProvider({ children }: { children: React.ReactNode }) {
         hasMedia: false
       };
       
-      setMessages(prev => [...prev, tempMessage]);
+      // Add message to our local state immediately
+      setMessages(prev => {
+        const updatedMessages = [...prev, tempMessage];
+        // Sort messages by timestamp to ensure chronological order
+        return updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
+      });
       
-      await wahaApiClient.sendMessage(selectedChatId, {
+      // Send the message via the API
+      const response = await wahaApiClient.sendMessage(selectedChatId, {
         text,
         quotedMessageId
       });
       
-      // Refresh messages to get the actual sent message
+      // Notify other clients about the new message
+      if (socket) {
+        socket.emit("whatsapp_message", {
+          chatId: selectedChatId,
+          messageId: response.id || tempId,
+          text,
+          timestamp: Date.now() / 1000
+        });
+      }
+      
+      // Refresh messages to get the actual sent message and replace the temp one
       await refreshMessages();
     } catch (error) {
       console.error('Failed to send message:', error);
       setMessageError('Failed to send message. Please try again.');
       
-      // Remove the optimistic message
-      setMessages(prev => prev.filter(msg => msg.id !== `temp-${Date.now()}`));
+      // Remove the optimistic message on error
+      setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
     }
-  }, [selectedChatId, refreshMessages]);
+  }, [selectedChatId, refreshMessages, socket]);
   
   // Archive chat action
   const archiveChat = useCallback(async (chatId: string) => {

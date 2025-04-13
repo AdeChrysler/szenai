@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { wahaApiClient, WAHAChat, WAHAMessage } from '@/lib/wahaApi';
+import { io, Socket } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,8 +50,51 @@ const WhatsAppChatInterface: React.FC = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'all' | 'archived'>('all');
   const [error, setError] = useState<string | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Socket.IO connection
+  useEffect(() => {
+    const socketInstance = io(window.location.origin);
+    setSocket(socketInstance);
+    
+    // Setup Socket.IO event listeners
+    socketInstance.on('connect', () => {
+      console.log('Connected to real-time server');
+    });
+    
+    socketInstance.on('receive_message', (data) => {
+      if (data.chatId === selectedChatId) {
+        console.log('Real-time message received:', data);
+        fetchMessages(selectedChatId);
+      } else {
+        // Update chats to refresh last message info
+        fetchChats();
+      }
+    });
+    
+    socketInstance.on('whatsapp_update', (data) => {
+      console.log('WhatsApp update received:', data);
+      if (data.chatId === selectedChatId) {
+        fetchMessages(selectedChatId);
+      } else {
+        fetchChats();
+      }
+    });
+    
+    socketInstance.on('chats_refresh_needed', () => {
+      fetchChats();
+    });
+    
+    socketInstance.on('disconnect', () => {
+      console.log('Disconnected from real-time server');
+    });
+    
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [selectedChatId]);
 
   // Fetch chats on component mount
   useEffect(() => {
@@ -139,20 +183,41 @@ const WhatsAppChatInterface: React.FC = () => {
     try {
       setIsLoading(true);
       
+      // Create unique ID for this message for optimistic updates
+      const tempId = `temp-${Date.now()}`;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      
       // Optimistic update for better UX
       const optimisticMessage: WAHAMessage = {
-        id: `temp-${Date.now()}`,
-        timestamp: Math.floor(Date.now() / 1000),
+        id: tempId,
+        timestamp: currentTimestamp,
         from: 'me',
         fromMe: true,
         body: messageText,
         hasMedia: false
       };
       
-      setMessages(prev => [...prev, optimisticMessage]);
+      // Add message to local state and ensure messages are sorted by timestamp
+      setMessages(prev => {
+        const updatedMessages = [...prev, optimisticMessage];
+        return updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
+      });
+      
+      const originalText = messageText;
       setMessageText('');
       
-      await wahaApiClient.sendMessage(selectedChatId, { text: messageText });
+      // Send the actual message
+      const response = await wahaApiClient.sendMessage(selectedChatId, { text: originalText });
+      
+      // Emit socket event to notify other clients
+      if (socket) {
+        socket.emit('send_message', {
+          chatId: selectedChatId,
+          messageId: response?.id || tempId,
+          text: originalText,
+          timestamp: currentTimestamp
+        });
+      }
       
       // Refetch messages to get the actual sent message
       fetchMessages(selectedChatId);
@@ -163,6 +228,9 @@ const WhatsAppChatInterface: React.FC = () => {
         description: "Your message could not be sent. Please try again.",
         variant: "destructive"
       });
+      
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
     } finally {
       setIsLoading(false);
     }

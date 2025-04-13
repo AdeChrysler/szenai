@@ -7,7 +7,8 @@ import crypto from "crypto";
 import { createClient } from '@supabase/supabase-js';
 import { storage } from './storage';
 import { pool } from './db';
-import { setupWAHAProxy } from './waha-proxy';
+import { setupWAHAProxy, setSocketIOServer } from './waha-proxy';
+import { Server as SocketIOServer } from 'socket.io';
 
 // Create Supabase client for server-side operations (for authentication only)
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
@@ -164,9 +165,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Set up WAHA API proxy routes
-  setupWAHAProxy(app);
-
   const httpServer = createServer(app);
+  const io = new SocketIOServer(httpServer);
+  setSocketIOServer(io); // Pass Socket.IO server instance to WAHA proxy
+  setupWAHAProxy(app, io); // Pass Socket.IO server instance to WAHA proxy
 
   return httpServer;
 }

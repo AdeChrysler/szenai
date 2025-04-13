@@ -4,6 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./init-db";
 import { registerRoutes } from "./routes";
 import http from 'http';
+import { Server as SocketIOServer } from "socket.io";
+
 
 const app = express();
 app.use(cors()); // Enable CORS
@@ -50,6 +52,26 @@ app.use((req, res, next) => {
   }
 
   const server = http.createServer(app);
+  const io = new SocketIOServer(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
+
+  io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
+
+    socket.on("send_message", (data) => {
+      io.emit("receive_message", data);
+    });
+
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected:", socket.id);
+    });
+  });
+
 
   // Register all routes
   registerRoutes(app);
@@ -62,18 +84,13 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = 5000;
   server.listen({
     port,

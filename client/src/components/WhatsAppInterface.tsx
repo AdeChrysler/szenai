@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useWhatsApp } from '@/contexts/WhatsAppContext';
 import { 
@@ -6,6 +5,7 @@ import {
   getAvatarInitials,
   formatRelativeTime,
   formatMessageTime,
+  formatMessageDate, // Added this import
   groupMessagesByDate,
   linkifyText,
   debounce
@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import {
+import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -88,41 +88,41 @@ export const WhatsAppInterface: React.FC = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [archiveFilter, setArchiveFilter] = useState<'all' | 'archived' | 'unarchived'>('all');
-  
+
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Scroll to bottom of messages whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-  
+
   // Filter chats when search query changes
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredChats(chats);
       return;
     }
-    
+
     const lowerQuery = searchQuery.toLowerCase();
     const filtered = chats.filter(chat => {
       const displayName = getChatDisplayName(chat).toLowerCase();
       const id = chat.id.toLowerCase();
       const lastMessage = chat.lastMessage?.body.toLowerCase() || '';
-      
+
       return displayName.includes(lowerQuery) || 
              id.includes(lowerQuery) || 
              lastMessage.includes(lowerQuery);
     });
-    
+
     setFilteredChats(filtered);
   }, [searchQuery, chats]);
-  
+
   // Sort and filter chats
   useEffect(() => {
     let filtered = [...chats];
-    
+
     // Apply archive filter
     if (archiveFilter !== 'all') {
       filtered = filtered.filter(chat => {
@@ -133,15 +133,15 @@ export const WhatsAppInterface: React.FC = () => {
         }
       });
     }
-    
+
     // Apply sorting
     filtered.sort((a, b) => {
       const timeA = a.conversationTimestamp || 0;
       const timeB = b.conversationTimestamp || 0;
-      
+
       return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
     });
-    
+
     setFilteredChats(filtered);
   }, [chats, sortOrder, archiveFilter]);
 
@@ -149,13 +149,13 @@ export const WhatsAppInterface: React.FC = () => {
   const handleSearch = debounce((value: string) => {
     setSearchQuery(value);
   }, 300);
-  
+
   // Message submission handler
   const handleSubmitMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!messageText.trim()) return;
-    
+
     if (editingMessageId) {
       // Edit existing message
       editMessage(editingMessageId, messageText);
@@ -164,23 +164,23 @@ export const WhatsAppInterface: React.FC = () => {
       // Send new message
       sendMessage(messageText);
     }
-    
+
     setMessageText('');
   };
-  
+
   // Handle starting message edit
   const handleStartEdit = (message: any) => {
     setEditingMessageId(message.id);
     setMessageText(message.body);
     messageInputRef.current?.focus();
   };
-  
+
   // Handle canceling message edit
   const handleCancelEdit = () => {
     setEditingMessageId(null);
     setMessageText('');
   };
-  
+
   // Toggle chat archive state
   const handleToggleArchive = (chatId: string, isArchived: boolean) => {
     if (isArchived) {
@@ -197,7 +197,7 @@ export const WhatsAppInterface: React.FC = () => {
       });
     }
   };
-  
+
   // Delete chat with confirmation
   const handleDeleteChat = (chatId: string) => {
     if (window.confirm('Are you sure you want to delete this chat? This cannot be undone.')) {
@@ -208,7 +208,7 @@ export const WhatsAppInterface: React.FC = () => {
       });
     }
   };
-  
+
   // Delete message with confirmation
   const handleDeleteMessage = (messageId: string) => {
     if (window.confirm('Are you sure you want to delete this message?')) {
@@ -219,7 +219,7 @@ export const WhatsAppInterface: React.FC = () => {
       });
     }
   };
-  
+
   // Handle "Pin" or "Unpin" message
   const handleTogglePin = (messageId: string, isPinned: boolean) => {
     if (isPinned) {
@@ -236,7 +236,7 @@ export const WhatsAppInterface: React.FC = () => {
       });
     }
   };
-  
+
   // Copy message text to clipboard
   const handleCopyText = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -294,7 +294,7 @@ export const WhatsAppInterface: React.FC = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
+
           <Tabs defaultValue="all" onValueChange={(value) => setArchiveFilter(value as any)}>
             <TabsList className="grid grid-cols-3 w-full">
               <TabsTrigger value="all">All</TabsTrigger>
@@ -303,7 +303,7 @@ export const WhatsAppInterface: React.FC = () => {
             </TabsList>
           </Tabs>
         </CardHeader>
-        
+
         <CardContent className="flex-1 overflow-y-auto p-0">
           {isLoadingChats ? (
             <div className="flex items-center justify-center h-full p-4">
@@ -349,7 +349,7 @@ export const WhatsAppInterface: React.FC = () => {
                         {getAvatarInitials(chat)}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
                         <div className="font-medium truncate mb-1">
@@ -361,22 +361,22 @@ export const WhatsAppInterface: React.FC = () => {
                             : ''}
                         </div>
                       </div>
-                      
+
                       <div className="text-sm text-muted-foreground truncate">
                         {chat.lastMessage?.body || 'No messages'}
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-2">
                         <Badge variant="outline" className="text-xs">
                           WhatsApp
                         </Badge>
-                        
+
                         {chat.archiveState === 'archived' && (
                           <Badge variant="secondary" className="text-xs">
                             Archived
                           </Badge>
                         )}
-                        
+
                         {chat.markedAsUnread && (
                           <Badge variant="destructive" className="text-xs">
                             Unread
@@ -410,7 +410,7 @@ export const WhatsAppInterface: React.FC = () => {
                       {getAvatarInitials(filteredChats.find(c => c.id === selectedChatId) || { id: selectedChatId })}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <div>
                     <h3 className="font-medium">
                       {getChatDisplayName(filteredChats.find(c => c.id === selectedChatId) || { id: selectedChatId })}
@@ -423,7 +423,7 @@ export const WhatsAppInterface: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <TooltipProvider>
                     <Tooltip>
@@ -435,7 +435,7 @@ export const WhatsAppInterface: React.FC = () => {
                       <TooltipContent>Call (not implemented)</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="rounded-full">
@@ -470,7 +470,7 @@ export const WhatsAppInterface: React.FC = () => {
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
               {isLoadingMessages ? (
                 <div className="flex items-center justify-center h-full">
@@ -507,7 +507,7 @@ export const WhatsAppInterface: React.FC = () => {
                           {date}
                         </Badge>
                       </div>
-                      
+
                       {dateMessages.map((message) => (
                         <div 
                           key={message.id}
@@ -527,7 +527,7 @@ export const WhatsAppInterface: React.FC = () => {
                             <div className="whitespace-pre-wrap text-sm">
                               {linkifyText(message.body)}
                             </div>
-                            
+
                             {/* Message media content if present */}
                             {message.hasMedia && (
                               <div className="mt-2 p-2 bg-background/30 rounded-lg flex items-center gap-2">
@@ -541,7 +541,7 @@ export const WhatsAppInterface: React.FC = () => {
                                 </span>
                               </div>
                             )}
-                            
+
                             {/* Message footer with time and status */}
                             <div className={`text-xs mt-1 text-right flex items-center justify-end gap-1 ${
                               message.fromMe 
@@ -566,14 +566,14 @@ export const WhatsAppInterface: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            
+
                             {/* Message pin indicator */}
                             {message.isPinned && (
                               <div className="absolute -top-1 -right-1 bg-amber-500 text-white rounded-full p-0.5">
                                 <Pin className="h-3 w-3" />
                               </div>
                             )}
-                            
+
                             {/* Message actions menu */}
                             <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
                               <DropdownMenu>
@@ -620,7 +620,7 @@ export const WhatsAppInterface: React.FC = () => {
                 </>
               )}
             </CardContent>
-            
+
             <div className="p-4 border-t flex-shrink-0">
               <form onSubmit={handleSubmitMessage} className="space-y-2">
                 {editingMessageId && (
@@ -639,7 +639,7 @@ export const WhatsAppInterface: React.FC = () => {
                     </Button>
                   </div>
                 )}
-                
+
                 <div className="flex gap-2">
                   <Input 
                     ref={messageInputRef}
@@ -657,7 +657,7 @@ export const WhatsAppInterface: React.FC = () => {
                   </Button>
                 </div>
               </form>
-              
+
               <div className="mt-2 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground flex items-center gap-1">
                   <Badge variant="outline" className="text-[10px] h-5">
@@ -699,3 +699,33 @@ export const WhatsAppInterface: React.FC = () => {
     </div>
   );
 };
+
+// Group messages by date, ensuring chronological order
+const groupMessagesByDate = (messages: any[]) => {
+    // First sort all messages by timestamp
+    const sortedMessages = [...messages].sort((a, b) => {
+      // Handle invalid timestamps by using current time as fallback
+      const timestampA = isNaN(a.timestamp) ? Date.now() / 1000 : a.timestamp;
+      const timestampB = isNaN(b.timestamp) ? Date.now() / 1000 : b.timestamp;
+      return timestampA - timestampB; // Ascending order (oldest first)
+    });
+
+    const groups: { [key: string]: any[] } = {};
+
+    sortedMessages.forEach(message => {
+      const date = formatMessageDate(message.timestamp);
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(message);
+    });
+
+    // Sort the dates chronologically too
+    return Object.entries(groups).sort((a, b) => {
+      const dateA = new Date(a[0] === 'Today' ? Date.now() : 
+                            a[0] === 'Yesterday' ? Date.now() - 86400000 : a[0]);
+      const dateB = new Date(b[0] === 'Today' ? Date.now() : 
+                            b[0] === 'Yesterday' ? Date.now() - 86400000 : b[0]);
+      return dateA.getTime() - dateB.getTime();
+    });
+  };

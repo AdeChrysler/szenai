@@ -101,36 +101,120 @@ export function groupMessagesByDate(messages: WAHAMessage[]): [string, WAHAMessa
   return Object.entries(groups);
 }
 
-// Convert URL to clickable link
-export function linkifyText(text: string): React.ReactNode {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const phoneRegex = /(\+?[\d\s-]{10,15})/g;
+import React from 'react';
 
-  if (!urlRegex.test(text) && !phoneRegex.test(text)) {
-    return text;
+export function linkifyText(text: string) {
+  if (!text) return text;
+
+  // Regular expressions for detection
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
+  const phoneRegex = /(\+?[\d\s()-]{10,})/g;
+
+  // Split text into parts that match regexes and those that don't
+  const parts = [];
+  let lastIndex = 0;
+
+  // Handle URLs
+  text.replace(urlRegex, (match, url, index) => {
+    if (index > lastIndex) {
+      parts.push(text.substring(lastIndex, index));
+    }
+    parts.push({ type: 'url', content: url });
+    lastIndex = index + match.length;
+    return match;
+  });
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
   }
 
-  // Split by URLs and phones
-  const parts = text.split(urlRegex);
+  // Process email and phone in the non-URL parts
+  const processedParts = parts.map(part => {
+    if (typeof part === 'string') {
+      // Process emails
+      const emailParts = [];
+      let lastEmailIndex = 0;
 
-  return parts.map((part, index) => {
-    if (part.match(urlRegex)) {
-      return React.createElement('a', {
-        key: index,
-        href: part,
-        target: "_blank",
-        rel: "noopener noreferrer",
-        className: "text-blue-500 underline"
-      }, part);
-    } else if (part.match(phoneRegex)) {
-      return React.createElement('a', {
-        key: index,
-        href: `tel:${part.replace(/\s/g, '')}`,
-        className: "text-blue-500"
-      }, part);
-    } else {
-      return part;
+      part.replace(emailRegex, (match, email, index) => {
+        if (index > lastEmailIndex) {
+          emailParts.push(part.substring(lastEmailIndex, index));
+        }
+        emailParts.push({ type: 'email', content: email });
+        lastEmailIndex = index + match.length;
+        return match;
+      });
+
+      if (lastEmailIndex < part.length) {
+        emailParts.push(part.substring(lastEmailIndex));
+      }
+
+      // Process phone numbers in the non-email parts
+      return emailParts.map(emailPart => {
+        if (typeof emailPart === 'string') {
+          const phoneParts = [];
+          let lastPhoneIndex = 0;
+
+          emailPart.replace(phoneRegex, (match, phone, index) => {
+            if (index > lastPhoneIndex) {
+              phoneParts.push(emailPart.substring(lastPhoneIndex, index));
+            }
+            phoneParts.push({ type: 'phone', content: phone });
+            lastPhoneIndex = index + match.length;
+            return match;
+          });
+
+          if (lastPhoneIndex < emailPart.length) {
+            phoneParts.push(emailPart.substring(lastPhoneIndex));
+          }
+
+          return phoneParts;
+        }
+        return emailPart;
+      }).flat();
     }
+    return part;
+  }).flat();
+
+  // Convert parts to React elements
+  return processedParts.map((part, index) => {
+    if (typeof part === 'string') {
+      return part;
+    } else if (part.type === 'url') {
+      return (
+        <a
+          key={index}
+          href={part.content}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          {part.content}
+        </a>
+      );
+    } else if (part.type === 'email') {
+      return (
+        <a
+          key={index}
+          href={`mailto:${part.content}`}
+          className="text-purple-600 hover:underline"
+        >
+          {part.content}
+        </a>
+      );
+    } else if (part.type === 'phone') {
+      return (
+        <a
+          key={index}
+          href={`tel:${part.content.replace(/\s/g, '')}`}
+          className="text-green-600 hover:underline"
+        >
+          {part.content}
+        </a>
+      );
+    }
+    return null;
   });
 }
 
