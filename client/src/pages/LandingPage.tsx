@@ -174,6 +174,17 @@ export default function LandingPage() {
             <Button 
               variant="ghost" 
               size="sm" 
+              className="text-blue-400 hover:text-blue-300 hover:bg-blue-950/50 rounded-full px-4 flex items-center"
+              asChild
+            >
+              <Link href="/whatsapp-new-chat">
+                <MessageCircle className="w-4 h-4 mr-1.5" />
+                Chat
+              </Link>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
               className="text-blue-400 hover:text-blue-300 hover:bg-blue-950/50 rounded-full px-4"
               asChild
             >
