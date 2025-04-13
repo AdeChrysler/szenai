@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from './DashboardPage';
 import { 
@@ -48,7 +47,7 @@ const ChatPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'answered' | 'unanswered'>('all');
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  
+
   // Enhanced sample chats data with rich information
   const chats: Chat[] = [
     {
@@ -238,12 +237,12 @@ const ChatPage: React.FC = () => {
     const matchesSearch = 
       chat.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesStatus = 
       statusFilter === 'all' || 
       (statusFilter === 'answered' && chat.status === 'answered') ||
       (statusFilter === 'unanswered' && chat.status === 'unanswered');
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -332,7 +331,7 @@ const ChatPage: React.FC = () => {
                   <Filter className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <Tabs defaultValue="all" onValueChange={(value) => setStatusFilter(value as any)}>
                 <TabsList className="grid grid-cols-3 w-full">
                   <TabsTrigger value="all">Semua</TabsTrigger>
@@ -341,7 +340,7 @@ const ChatPage: React.FC = () => {
                 </TabsList>
               </Tabs>
             </CardHeader>
-            
+
             <CardContent className="p-0 max-h-[calc(100vh-300px)] overflow-y-auto">
               <div className="space-y-1">
                 {filteredChats.map((chat) => (
@@ -424,12 +423,12 @@ const ChatPage: React.FC = () => {
                     </div>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
                   <div className="text-center text-xs text-gray-500 py-2">
                     {selectedChat.lastMessageTime.includes('menit') ? 'Hari ini' : 'Kemarin'}
                   </div>
-                  
+
                   {messages.map((message, index) => (
                     <div 
                       key={message.id}
@@ -473,7 +472,7 @@ const ChatPage: React.FC = () => {
                       )}
                     </div>
                   ))}
-                  
+
                   {selectedChat?.status === 'unanswered' && (
                     <div className="flex justify-center my-4 animate-pulse-subtle">
                       <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-xs text-gray-500 flex items-center">
@@ -486,14 +485,14 @@ const ChatPage: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="flex justify-center">
                     <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-xs text-gray-500">
                       Menunggu balasan...
                     </div>
                   </div>
                 </CardContent>
-                
+
                 <div className="p-4 border-t dark:border-gray-800">
                   <div className="flex gap-2">
                     <Input 
@@ -525,7 +524,7 @@ const ChatPage: React.FC = () => {
             )}
           </Card>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
           {[
@@ -570,7 +569,7 @@ const ChatPage: React.FC = () => {
             </Card>
           ))}
         </div>
-        
+
         {/* Recent Activity Log */}
         <Card className="dark:border-gray-800 dark:bg-gray-900 animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <CardHeader>
