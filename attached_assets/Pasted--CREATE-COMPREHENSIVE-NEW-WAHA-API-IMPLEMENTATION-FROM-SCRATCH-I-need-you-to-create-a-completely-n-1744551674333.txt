@@ -1,0 +1,209 @@
+# CREATE COMPREHENSIVE NEW WAHA API IMPLEMENTATION FROM SCRATCH
+
+I need you to create a completely new, professional-grade implementation for integrating with the WAHA WhatsApp API. Instead of trying to fix my existing broken code, please create a fresh implementation from the ground up that follows best practices for modern web development.
+
+## WAHA API DETAILS:
+- Base URL: http://waha.sixzenith.space:3002
+- Session name: z17
+- API Key: 666
+- Authentication header: X-Api-Key: 666 (NOT Bearer token)
+- Accept header: accept: */*
+
+## WORKING CURL EXAMPLE:
+```bash
+curl -X 'GET' \
+  'http://waha.sixzenith.space:3002/api/z17/chats?sortBy=conversationTimestamp&limit=5' \
+  -H 'accept: */*' \
+  -H 'X-Api-Key: 666'
+```
+
+## EXAMPLE API RESPONSE (CHATS ENDPOINT):
+```json
+[
+  {
+    "id": "6282244433392@s.whatsapp.net",
+    "conversationTimestamp": 1744503382
+  },
+  {
+    "id": "6288988988918@s.whatsapp.net",
+    "readOnly": false,
+    "ephemeralExpiration": 0,
+    "ephemeralSettingTimestamp": 0,
+    "conversationTimestamp": 1744474094,
+    "notSpam": true,
+    "disappearingMode": {
+      "initiator": 0
+    },
+    "unreadMentionCount": 0,
+    "markedAsUnread": false,
+    "tcToken": {
+      "type": "Buffer",
+      "data": "AwH2Cg9G5QzhlG8="
+    },
+    "tcTokenTimestamp": 1732259135,
+    "contactPrimaryIdentityKey": {
+      "type": "Buffer",
+      "data": "mFqvvW6DcHzXdUB4Z0Hjh5xOoy28onmJ0AuzLNrND2U="
+    },
+    "tcTokenSenderTimestamp": 1738331468,
+    "lidJid": "6739055390963@lid",
+    "commentsCount": 1000000,
+    "locked": false
+  }
+]
+```
+
+## COMPREHENSIVE IMPLEMENTATION REQUIREMENTS:
+
+### 1. WAHA API CLIENT LIBRARY
+Create a comprehensive TypeScript API client library with:
+
+- Properly typed request and response interfaces for all endpoints
+- Clear separation of concerns (networking, data transformation, error handling)
+- Full support for all WAHA API endpoints:
+  - GET /api/z17/chats - Get all chats with sorting and pagination
+  - GET /api/z17/chats/overview - Get chat overview information
+  - GET /api/z17/chats/{chatId}/picture - Get chat profile picture
+  - POST /api/z17/chats/{chatId}/archive - Archive a chat
+  - POST /api/z17/chats/{chatId}/unarchive - Unarchive a chat
+  - POST /api/z17/chats/{chatId}/unread - Mark chat as unread
+  - DELETE /api/z17/chats/{chatId} - Delete a chat
+  - GET /api/z17/chats/{chatId}/messages - Get messages from a chat with pagination
+  - GET /api/z17/chats/{chatId}/messages/{messageId} - Get specific message
+  - POST /api/z17/chats/{chatId}/messages/{messageId}/pin - Pin message
+  - POST /api/z17/chats/{chatId}/messages/{messageId}/unpin - Unpin message
+  - PUT /api/z17/chats/{chatId}/messages/{messageId} - Edit message
+  - DELETE /api/z17/chats/{chatId}/messages/{messageId} - Delete message
+  - POST /api/z17/messages/chat - Send a message to a chat
+- Robust error handling with custom error types for different API errors
+- Rate limiting and retry logic for API requests
+- Proper URL encoding for all parameters (especially chat IDs that contain @ symbols)
+- Caching mechanisms for frequently accessed data
+- Comprehensive logging for debugging
+
+### 2. BACKEND API PROXY (SERVER-SIDE)
+Create a server-side proxy that:
+
+- Securely forwards requests to the WAHA API
+- Adds required headers (X-Api-Key and accept)
+- Handles errors and returns appropriate HTTP status codes
+- Implements request validation
+- Provides proper CORS headers for frontend access
+- Implements appropriate caching headers
+- Handles session management
+- Provides a unified error format for the frontend
+- Implements rate limiting for client requests
+
+### 3. FRONTEND UI COMPONENTS
+Develop a complete set of React components that:
+
+- Follow modern React best practices (hooks, context, etc.)
+- Use TypeScript for type safety
+- Implement responsive design principles
+- Follow accessibility standards (WCAG)
+- Include proper loading states, error states, and empty states
+- Support desktop and mobile layouts
+- Include appropriate animations for a polished UX
+
+Components should include:
+- Chat list with sorting and filtering options
+- Chat detail view with message threading
+- Message composition with text formatting
+- Media attachment handling
+- Read receipts
+- Online status indicators
+- Typing indicators
+- User profile viewing
+- Search functionality
+- Message reaction UI
+- Message context menus
+- Notification badges
+- Archive/unarchive UI
+- Chat settings panel
+- Error boundary components
+- Toast notifications for actions
+
+### 4. STATE MANAGEMENT
+Implement a robust state management solution:
+
+- Use React Context API or Redux for global state
+- Implement optimistic updates for better UX
+- Use proper data normalization techniques
+- Handle offline/online state transitions
+- Implement proper data loading patterns
+- Support real-time updates when messages arrive
+- Include proper error state management
+- Implement proper form state management for message composition
+
+### 5. REAL-TIME FUNCTIONALITY
+If the WAHA API supports WebSockets or polling for real-time updates:
+
+- Implement a WebSocket client for real-time message delivery
+- Handle connection state (connecting, connected, disconnected)
+- Implement reconnection logic
+- Sync state between WebSocket events and REST API data
+- Implement presence detection (online/offline status)
+- Handle typing indicators
+
+### 6. CHATPAGE UI IMPLEMENTATION
+Create a full-featured chat page that:
+
+- Shows a list of chats with search and filter options
+- Displays chat details including profile pictures
+- Shows message history with proper formatting for different message types
+- Supports message actions (reply, forward, delete, etc.)
+- Includes a message composition area with support for text, emoji, and attachments
+- Shows typing indicators and read receipts
+- Includes proper error handling and retry options
+- Supports mobile and desktop layouts
+- Implements proper keyboard navigation
+- Includes accessibility features
+- Handles offline/online state gracefully
+- Shows appropriate loading states
+
+### 7. UTILITY FUNCTIONS AND HELPERS
+Develop a set of utility functions for:
+
+- Date and time formatting for messages
+- Phone number formatting
+- Message content parsing (links, phone numbers, etc.)
+- File size formatting
+- Proper error message formatting
+- Debouncing and throttling for UI interactions
+- Validation functions for input
+- URL encoding/decoding helpers (especially for chat IDs with @ symbols)
+
+### 8. TESTING STRATEGY
+Include a comprehensive testing approach:
+
+- Unit tests for API client functions
+- Integration tests for API endpoints
+- Component tests for UI elements
+- End-to-end tests for critical user flows
+- Mock API responses for testing
+- Test coverage reporting
+
+### 9. DOCUMENTATION
+Provide thorough documentation:
+
+- API client usage examples
+- Component props documentation
+- State management patterns
+- Error handling strategies
+- Build and deployment instructions
+- Configuration options
+- Troubleshooting guide
+
+### 10. PERFORMANCE OPTIMIZATION
+Implement performance best practices:
+
+- Code splitting for large components
+- Lazy loading for non-critical resources
+- Proper React memoization
+- Efficient list rendering with virtualization
+- Image optimization
+- Bundle size optimization
+- Network request optimization (batching, caching)
+- Minimizing re-renders
+
+Please implement this comprehensive solution with clean, maintainable code that follows best practices. Focus on creating a robust, scalable implementation that can handle the complexities of a WhatsApp API integration while providing an excellent user experience.
