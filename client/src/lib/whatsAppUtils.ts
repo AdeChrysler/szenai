@@ -114,27 +114,19 @@ export function linkifyText(text: string): React.ReactNode {
   
   return parts.map((part, index) => {
     if (part.match(urlRegex)) {
-      return (
-        <a 
-          key={index} 
-          href={part} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-blue-500 underline"
-        >
-          {part}
-        </a>
-      );
+      return React.createElement('a', {
+        key: index,
+        href: part,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "text-blue-500 underline"
+      }, part);
     } else if (part.match(phoneRegex)) {
-      return (
-        <a 
-          key={index} 
-          href={`tel:${part.replace(/\s/g, '')}`} 
-          className="text-blue-500"
-        >
-          {part}
-        </a>
-      );
+      return React.createElement('a', {
+        key: index,
+        href: `tel:${part.replace(/\s/g, '')}`,
+        className: "text-blue-500"
+      }, part);
     } else {
       return part;
     }
