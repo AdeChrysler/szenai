@@ -24,11 +24,11 @@ const verifyToken = async (req: Request, res: Response, next: Function) => {
 
     const token = authHeader.split(' ')[1];
     const { data, error } = await supabase.auth.getUser(token);
-    
+
     if (error || !data.user) {
       return res.status(401).json({ message: 'Invalid token' });
     }
-    
+
     // Add user data to request
     req.body.supabaseUser = data.user;
     next();
@@ -58,13 +58,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { message, sessionId = crypto.randomUUID() } = chatRequestSchema.parse(req.body);
       const supabaseUser = req.body.supabaseUser;
-      
+
       // Find or create user profile in PostgreSQL database
       const userId = parseInt(supabaseUser.id);
-      
+
       // Check if the user exists in our database
       let user = await storage.getUser(userId);
-      
+
       // If user not found, create the profile
       if (!user) {
         // Update the database schema to handle the custom ID insertion
@@ -73,10 +73,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             'INSERT INTO users (id, email, password) VALUES ($1, $2, $3) RETURNING *',
             [userId, supabaseUser.email, '']
           );
-          
+
           // Now get the user
           user = await storage.getUser(userId);
-          
+
           if (!user) {
             throw new Error('Failed to create user');
           }
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error('Failed to create user profile');
         }
       }
-      
+
       // Store user message
       const userMessage = await storage.createMessage({
         user_id: userId,
@@ -93,11 +93,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: "user",
         session_id: sessionId
       });
-      
+
       // This is where you would call the n8n endpoint with the message
       // For now, simulate a response
       const assistantResponse = "This is a simulated response. In a real application, this would be the response from n8n calling the Groq AI model.";
-      
+
       // Store assistant response
       const assistantMessage = await storage.createMessage({
         user_id: userId,
@@ -105,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: "assistant",
         session_id: sessionId
       });
-      
+
       return res.status(200).json({ 
         message: assistantMessage,
         sessionId
@@ -120,14 +120,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Internal server error" });
     }
   });
-  
+
   // Route to create necessary tables
   app.post("/api/create-tables", verifyToken, async (req, res) => {
     try {
       // Import the function to initialize database and call it
       const { initializeDatabase } = await import('./init-db');
       await initializeDatabase();
-      
+
       return res.status(200).json({ message: "Tables created successfully" });
     } catch (error) {
       console.error('Table creation error:', error);
@@ -140,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabaseUser = req.body.supabaseUser;
       const sessionId = req.query.sessionId as string;
       const userId = parseInt(supabaseUser.id);
-      
+
       try {
         // If sessionId is 'all', get all messages for the user
         if (sessionId === 'all') {

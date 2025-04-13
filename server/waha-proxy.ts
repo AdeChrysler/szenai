@@ -1,132 +1,448 @@
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import type { Request, Response } from 'express';
+import { Express, Request, Response } from 'express';
+import axios, { AxiosInstance } from 'axios';
+import { rateLimit } from 'express-rate-limit';
 
-// WAHA API Configuration
-const WAHA_API_CONFIG = {
-  baseUrl: process.env.WAHA_API_URL || 'http://waha.sixzenith.space:3002',
-  sessionName: process.env.WAHA_SESSION_NAME || 'z17',
-  apiKey: process.env.WAHA_API_KEY || '666',
-};
+// Configuration
+const WAHA_BASE_URL = 'http://waha.sixzenith.space:3002/api';
+const WAHA_SESSION = 'z17';
+const WAHA_API_KEY = '666';
 
-// Create axios instance with default configuration
-const wahaAxios = axios.create({
-  baseURL: `${WAHA_API_CONFIG.baseUrl}/api/${WAHA_API_CONFIG.sessionName}`,
-  headers: {
-    'accept': '*/*',
-    'X-Api-Key': WAHA_API_CONFIG.apiKey
-  },
-  timeout: 30000 // 30 seconds timeout
+// Cache configuration
+const CACHE_TTL = 60 * 1000; // 1 minute
+const cache = new Map<string, { data: any; timestamp: number }>();
+
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
 });
 
-/**
- * Forward request to WAHA API with proper error handling
- */
-export async function proxyWahaRequest(req: Request, res: Response) {
-  const { path } = req.params;
-  const method = req.method.toLowerCase();
+// Initialize axios instance for WAHA API
+const wahaAxios: AxiosInstance = axios.create({
+  baseURL: WAHA_BASE_URL,
+  headers: {
+    'accept': '*/*',
+    'X-Api-Key': WAHA_API_KEY
+  },
+  timeout: 30000 // 30 seconds
+});
+
+// Get data from cache
+function getCachedData(key: string): any | null {
+  const cachedItem = cache.get(key);
+  if (cachedItem && Date.now() - cachedItem.timestamp < CACHE_TTL) {
+    return cachedItem.data;
+  }
+  return null;
+}
+
+// Set data in cache
+function setCachedData(key: string, data: any): void {
+  cache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
+}
+
+// Error handler
+function handleApiError(error: any, res: Response) {
+  console.error('WAHA API Error:', error);
   
-  try {
-    // Construct the URL properly
-    const url = `/api/${WAHA_API_CONFIG.sessionName}/${path || ''}`;
-    
-    // Forward the request to WAHA API
-    const response = await wahaAxios({
-      method,
-      url: `/${path || ''}`,
-      params: req.query,
-      data: method !== 'get' ? req.body : undefined,
-      responseType: 'json',
+  if (error.response) {
+    return res.status(error.response.status).json({
+      error: 'WAHA API Error',
+      status: error.response.status,
+      message: error.response.data.message || error.message,
+      data: error.response.data
     });
-    
-    // Send the WAHA API response back to the client
-    return res.status(response.status).json(response.data);
-  } catch (error) {
-    console.error('WAHA API Proxy Error:', error);
-    
-    // Handle axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        // Forward the WAHA API error response to the client
-        return res.status(axiosError.response.status).json(axiosError.response.data);
-      } else if (axiosError.request) {
-        // Request was made but no response received
-        return res.status(504).json({ 
-          error: 'Gateway Timeout', 
-          message: 'No response received from WAHA API' 
-        });
-      }
-    }
-    
-    // Generic error handling
-    return res.status(500).json({ 
-      error: 'Internal Server Error', 
-      message: 'An unexpected error occurred while proxying to WAHA API' 
+  } else if (error.request) {
+    return res.status(502).json({
+      error: 'WAHA API Connection Error',
+      message: 'No response received from WAHA API'
+    });
+  } else {
+    return res.status(500).json({
+      error: 'WAHA API Request Error',
+      message: error.message
     });
   }
 }
 
-/**
- * Register all WAHA API proxy routes
- */
-export function setupWahaProxyRoutes(app: any) {
-  // Proxy endpoint for WAHA API
-  app.all('/api/waha/:path(*)', proxyWahaRequest);
+export function setupWAHAProxy(app: Express) {
+  // Apply rate limiter to all WhatsApp API endpoints
+  app.use('/api/whatsapp', apiLimiter);
   
-  // Specific helpers for common WAHA operations
+  // CORS headers for all WhatsApp API endpoints
+  app.use('/api/whatsapp', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Max-Age', '86400'); // 24 hours
+    
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
+    next();
+  });
+  
+  // Get all chats
   app.get('/api/whatsapp/chats', async (req: Request, res: Response) => {
+    const { limit, offset, sortBy, sortOrder } = req.query;
+    const cacheKey = `chats:${JSON.stringify(req.query)}`;
+    
     try {
-      const response = await wahaAxios.get('/chats', { params: req.query });
-      return res.json(response.data);
-    } catch (error) {
-      console.error('Error fetching WhatsApp chats:', error);
-      return res.status(500).json({ error: 'Failed to fetch WhatsApp chats' });
-    }
-  });
-  
-  app.get('/api/whatsapp/chats/overview', async (req: Request, res: Response) => {
-    try {
-      const response = await wahaAxios.get('/chats/overview', { params: req.query });
-      return res.json(response.data);
-    } catch (error) {
-      console.error('Error fetching WhatsApp chats overview:', error);
-      return res.status(500).json({ error: 'Failed to fetch WhatsApp chats overview' });
-    }
-  });
-  
-  app.get('/api/whatsapp/chats/:chatId/messages', async (req: Request, res: Response) => {
-    try {
-      const { chatId } = req.params;
-      const encodedChatId = encodeURIComponent(chatId);
-      const response = await wahaAxios.get(`/chats/${encodedChatId}/messages`, { 
-        params: req.query 
-      });
-      return res.json(response.data);
-    } catch (error) {
-      console.error('Error fetching WhatsApp messages:', error);
-      return res.status(500).json({ error: 'Failed to fetch WhatsApp messages' });
-    }
-  });
-  
-  app.post('/api/whatsapp/send', async (req: Request, res: Response) => {
-    try {
-      const { chatId, text, quotedMessageId } = req.body;
-      
-      if (!chatId || !text) {
-        return res.status(400).json({ error: 'chatId and text are required' });
+      // Check cache first
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        res.header('X-Cache', 'HIT');
+        return res.json(cachedData);
       }
       
-      const response = await wahaAxios.post('/messages/chat', {
+      const response = await wahaAxios.get(`/${WAHA_SESSION}/chats`, {
+        params: { limit, offset, sortBy, sortOrder }
+      });
+      
+      // Cache the result
+      setCachedData(cacheKey, response.data);
+      
+      res.header('X-Cache', 'MISS');
+      res.header('Cache-Control', 'max-age=60'); // Client-side cache for 1 minute
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Get chats overview
+  app.get('/api/whatsapp/chats/overview', async (req: Request, res: Response) => {
+    const { limit, offset } = req.query;
+    const cacheKey = `chats-overview:${JSON.stringify(req.query)}`;
+    
+    try {
+      // Check cache first
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        res.header('X-Cache', 'HIT');
+        return res.json(cachedData);
+      }
+      
+      const response = await wahaAxios.get(`/${WAHA_SESSION}/chats/overview`, {
+        params: { limit, offset }
+      });
+      
+      // Cache the result
+      setCachedData(cacheKey, response.data);
+      
+      res.header('X-Cache', 'MISS');
+      res.header('Cache-Control', 'max-age=60'); // Client-side cache for 1 minute
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Get chat picture
+  app.get('/api/whatsapp/chats/:chatId/picture', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const { refresh } = req.query;
+    const cacheKey = `chat-picture:${chatId}:${refresh}`;
+    
+    try {
+      // Check cache first (unless refresh is true)
+      if (refresh !== 'true') {
+        const cachedData = getCachedData(cacheKey);
+        if (cachedData) {
+          res.header('X-Cache', 'HIT');
+          return res.json(cachedData);
+        }
+      }
+      
+      const response = await wahaAxios.get(`/${WAHA_SESSION}/chats/${chatId}/picture`, {
+        params: { refresh }
+      });
+      
+      // Cache the result
+      setCachedData(cacheKey, response.data);
+      
+      res.header('X-Cache', 'MISS');
+      res.header('Cache-Control', 'max-age=3600'); // Client-side cache for 1 hour
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Archive chat
+  app.post('/api/whatsapp/chats/:chatId/archive', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    
+    try {
+      const response = await wahaAxios.post(`/${WAHA_SESSION}/chats/${chatId}/archive`);
+      
+      // Clear related cache entries
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes('chats')) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Unarchive chat
+  app.post('/api/whatsapp/chats/:chatId/unarchive', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    
+    try {
+      const response = await wahaAxios.post(`/${WAHA_SESSION}/chats/${chatId}/unarchive`);
+      
+      // Clear related cache entries
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes('chats')) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Mark chat as unread
+  app.post('/api/whatsapp/chats/:chatId/unread', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    
+    try {
+      const response = await wahaAxios.post(`/${WAHA_SESSION}/chats/${chatId}/unread`);
+      
+      // Clear related cache entries
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes('chats')) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Delete chat
+  app.delete('/api/whatsapp/chats/:chatId', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    
+    try {
+      const response = await wahaAxios.delete(`/${WAHA_SESSION}/chats/${chatId}`);
+      
+      // Clear related cache entries
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes('chats') || key.includes(chatId)) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Get messages
+  app.get('/api/whatsapp/chats/:chatId/messages', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    const { limit, offset, downloadMedia, filter } = req.query;
+    const cacheKey = `messages:${chatId}:${JSON.stringify(req.query)}`;
+    
+    try {
+      // Check cache first
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        res.header('X-Cache', 'HIT');
+        return res.json(cachedData);
+      }
+      
+      const response = await wahaAxios.get(`/${WAHA_SESSION}/chats/${chatId}/messages`, {
+        params: { limit, offset, downloadMedia, filter }
+      });
+      
+      // Cache the result
+      setCachedData(cacheKey, response.data);
+      
+      res.header('X-Cache', 'MISS');
+      res.header('Cache-Control', 'max-age=30'); // Client-side cache for 30 seconds
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Get specific message
+  app.get('/api/whatsapp/chats/:chatId/messages/:messageId', async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    const { downloadMedia } = req.query;
+    const cacheKey = `message:${chatId}:${messageId}:${downloadMedia}`;
+    
+    try {
+      // Check cache first
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        res.header('X-Cache', 'HIT');
+        return res.json(cachedData);
+      }
+      
+      const response = await wahaAxios.get(
+        `/${WAHA_SESSION}/chats/${chatId}/messages/${messageId}`,
+        { params: { downloadMedia } }
+      );
+      
+      // Cache the result
+      setCachedData(cacheKey, response.data);
+      
+      res.header('X-Cache', 'MISS');
+      res.header('Cache-Control', 'max-age=300'); // Client-side cache for 5 minutes
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Pin message
+  app.post('/api/whatsapp/chats/:chatId/messages/:messageId/pin', async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    const { duration } = req.body;
+    
+    try {
+      const response = await wahaAxios.post(
+        `/${WAHA_SESSION}/chats/${chatId}/messages/${messageId}/pin`,
+        { duration }
+      );
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Unpin message
+  app.post('/api/whatsapp/chats/:chatId/messages/:messageId/unpin', async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    
+    try {
+      const response = await wahaAxios.post(
+        `/${WAHA_SESSION}/chats/${chatId}/messages/${messageId}/unpin`
+      );
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Edit message
+  app.put('/api/whatsapp/chats/:chatId/messages/:messageId', async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    const { text } = req.body;
+    
+    if (!text) {
+      return res.status(400).json({ error: 'Text parameter is required' });
+    }
+    
+    try {
+      const response = await wahaAxios.put(
+        `/${WAHA_SESSION}/chats/${chatId}/messages/${messageId}`,
+        { text }
+      );
+      
+      // Invalidate message cache
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes(messageId) || key.includes(`messages:${chatId}`)) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Delete message
+  app.delete('/api/whatsapp/chats/:chatId/messages/:messageId', async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    
+    try {
+      const response = await wahaAxios.delete(
+        `/${WAHA_SESSION}/chats/${chatId}/messages/${messageId}`
+      );
+      
+      // Invalidate message cache
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes(messageId) || key.includes(`messages:${chatId}`)) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Delete all messages
+  app.delete('/api/whatsapp/chats/:chatId/messages', async (req: Request, res: Response) => {
+    const { chatId } = req.params;
+    
+    try {
+      const response = await wahaAxios.delete(`/${WAHA_SESSION}/chats/${chatId}/messages`);
+      
+      // Invalidate message cache
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes(`messages:${chatId}`) || key.includes(`message:${chatId}`)) {
+          cache.delete(key);
+        }
+      }
+      
+      return res.json(response.data);
+    } catch (error) {
+      return handleApiError(error, res);
+    }
+  });
+  
+  // Send message
+  app.post('/api/whatsapp/messages/chat', async (req: Request, res: Response) => {
+    const { chatId, text, quotedMessageId } = req.body;
+    
+    if (!chatId || !text) {
+      return res.status(400).json({ error: 'chatId and text are required' });
+    }
+    
+    try {
+      const response = await wahaAxios.post(`/${WAHA_SESSION}/messages/chat`, {
         chatId,
         text,
         quotedMessageId
       });
       
+      // Invalidate chat messages cache
+      for (const key of Array.from(cache.keys())) {
+        if (key.includes(`messages:${chatId}`)) {
+          cache.delete(key);
+        }
+      }
+      
       return res.json(response.data);
     } catch (error) {
-      console.error('Error sending WhatsApp message:', error);
-      return res.status(500).json({ error: 'Failed to send WhatsApp message' });
+      return handleApiError(error, res);
     }
   });
 }
