@@ -52,7 +52,7 @@ function Router() {
       <Route path="/new-chat-ui">
         <ProtectedRoute component={NewChatUIPage} />
       </Route>
-      <Route path="/whatsapp-new-chat"> {/* Added route for WhatsAppNewChatPage */}
+      <Route path="/whatsapp-new-chat">
         <ProtectedRoute component={WhatsAppNewChatPage} />
       </Route>
       <Route path="/leads">

@@ -16,7 +16,8 @@ import {
   ChevronRight,
   ArrowUpRight,
   Zap,
-  UserCircle
+  UserCircle,
+  MessagesSquare
 } from 'lucide-react';
 import { 
   Card, 

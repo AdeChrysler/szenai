@@ -16,7 +16,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { NavLink } from "react-router-dom";
 
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
@@ -763,62 +762,29 @@ export {
   useSidebar,
 }
 
-// New WhatsApp New Chat component
-function WhatsAppNewChat() {
-  return (
-    <div>
-      <h1>WhatsApp New Chat Page</h1>
-      {/* Add your WhatsApp chat interface here */}
-    </div>
-  );
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
 }
-
-// Example of how to integrate the new page into the App.tsx file (replace ... with existing code)
-// Assuming you're using react-router-dom
-
-//This is a placeholder for your App.tsx file.  Replace the ... with your actual App component.  This example assumes you are using BrowserRouter and Routes from react-router-dom.  Adjust paths as needed.
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/dashboard/whatsapp-new-chat" element={<WhatsAppNewChat />} />
-            </Routes>
-        </BrowserRouter>
-    )
-}
-
-
-
-// Update Sidebar (example - adapt to your actual sidebar structure):
-
-//This is a placeholder for where the NavLinks might be in your Sidebar component.  The exact placement will depend on the structure of your original Sidebar.
-//  Make sure to add this NavLink within the appropriate section of your sidebar's JSX.
-
-const MySidebar = () => {
-  return (
-    <Sidebar>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <NavLink
-            to="/dashboard/whatsapp-new-chat"
-            className={({ isActive }) =>
-              `flex items-center py-3 px-3 rounded-lg text-sm ${
-                isActive ? "bg-primary/10 text-primary" : "text-gray-200 hover:bg-primary/5"
-              } my-1`
-            }
-          >
-            <MessageSquare className="mr-3 h-5 w-5" />
-            <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              WhatsApp New Chat
-            </div>
-          </NavLink>
-        </SidebarMenuItem>
-        {/* ... rest of your NavLinks */}
-      </SidebarMenu>
-    </Sidebar>
-  );
-}
-
-
-export default MySidebar;
