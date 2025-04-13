@@ -177,42 +177,30 @@ export function linkifyText(text: string) {
     return part;
   }).flat();
 
-  // Convert parts to React elements
+  // Convert parts to React elements with proper JSX syntax
   return processedParts.map((part, index) => {
     if (typeof part === 'string') {
       return part;
     } else if (part.type === 'url') {
-      return (
-        <a
-          key={index}
-          href={part.content}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline"
-        >
-          {part.content}
-        </a>
-      );
+      return React.createElement("a", {
+        key: index,
+        href: part.content,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "text-blue-600 hover:underline"
+      }, part.content);
     } else if (part.type === 'email') {
-      return (
-        <a
-          key={index}
-          href={`mailto:${part.content}`}
-          className="text-purple-600 hover:underline"
-        >
-          {part.content}
-        </a>
-      );
+      return React.createElement("a", {
+        key: index,
+        href: `mailto:${part.content}`,
+        className: "text-purple-600 hover:underline"
+      }, part.content);
     } else if (part.type === 'phone') {
-      return (
-        <a
-          key={index}
-          href={`tel:${part.content.replace(/\s/g, '')}`}
-          className="text-green-600 hover:underline"
-        >
-          {part.content}
-        </a>
-      );
+      return React.createElement("a", {
+        key: index,
+        href: `tel:${part.content.replace(/\s/g, '')}`,
+        className: "text-green-600 hover:underline"
+      }, part.content);
     }
     return null;
   });
