@@ -1,23 +1,24 @@
-
+import React from 'react';
 import { WAHAChat, WAHAMessage } from './wahaApiClient';
+import { Phone } from 'lucide-react';
 
 // Format phone number for display
 export function formatPhoneNumber(phoneNumber: string): string {
   // Extract phone number from chat ID (e.g., "123456789@c.us" -> "123456789")
   const numberOnly = phoneNumber.split('@')[0];
-  
+
   // Add "+" prefix if it doesn't have one
   if (!numberOnly.startsWith('+')) {
     return `+${numberOnly}`;
   }
-  
+
   return numberOnly;
 }
 
 // Get display name for a chat
 export function getChatDisplayName(chat: WAHAChat): string {
   if (chat.name) return chat.name;
-  
+
   // Use phone number if no name is available
   return formatPhoneNumber(chat.id);
 }
@@ -48,7 +49,7 @@ export function formatRelativeTime(timestamp: number): string {
   const diffMin = Math.round(diffSec / 60);
   const diffHour = Math.round(diffMin / 60);
   const diffDay = Math.round(diffHour / 24);
-  
+
   if (diffSec < 60) {
     return 'Just now';
   } else if (diffMin < 60) {
@@ -75,7 +76,7 @@ export function formatMessageDate(timestamp: number): string {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   if (date.toDateString() === today.toDateString()) {
     return 'Today';
   } else if (date.toDateString() === yesterday.toDateString()) {
@@ -88,7 +89,7 @@ export function formatMessageDate(timestamp: number): string {
 // Group messages by date
 export function groupMessagesByDate(messages: WAHAMessage[]): [string, WAHAMessage[]][] {
   const groups: Record<string, WAHAMessage[]> = {};
-  
+
   messages.forEach(message => {
     const date = formatMessageDate(message.timestamp);
     if (!groups[date]) {
@@ -96,7 +97,7 @@ export function groupMessagesByDate(messages: WAHAMessage[]): [string, WAHAMessa
     }
     groups[date].push(message);
   });
-  
+
   return Object.entries(groups);
 }
 
@@ -104,14 +105,14 @@ export function groupMessagesByDate(messages: WAHAMessage[]): [string, WAHAMessa
 export function linkifyText(text: string): React.ReactNode {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const phoneRegex = /(\+?[\d\s-]{10,15})/g;
-  
+
   if (!urlRegex.test(text) && !phoneRegex.test(text)) {
     return text;
   }
-  
+
   // Split by URLs and phones
   const parts = text.split(urlRegex);
-  
+
   return parts.map((part, index) => {
     if (part.match(urlRegex)) {
       return React.createElement('a', {
@@ -136,11 +137,11 @@ export function linkifyText(text: string): React.ReactNode {
 // Format file size (e.g., "1.5 MB")
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
@@ -182,13 +183,13 @@ export function debounce<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
-  
+
   return function executedFunction(...args: Parameters<T>) {
     const later = () => {
       timeout = null;
       func(...args);
     };
-    
+
     if (timeout) {
       clearTimeout(timeout);
     }
