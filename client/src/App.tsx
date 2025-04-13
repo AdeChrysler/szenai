@@ -11,6 +11,7 @@ import LeadsPage from "./pages/LeadsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
+import NewChatUIPage from "./pages/NewChatUIPage"; // Added import for NewChatUIPage
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useEffect } from "react";
 
@@ -46,6 +47,9 @@ function Router() {
       </Route>
       <Route path="/chat">
         <ProtectedRoute component={ChatPage} />
+      </Route>
+      <Route path="/new-chat-ui"> {/* Added route for NewChatUIPage */}
+        <ProtectedRoute component={NewChatUIPage} />
       </Route>
       <Route path="/leads">
         <ProtectedRoute component={LeadsPage} />
