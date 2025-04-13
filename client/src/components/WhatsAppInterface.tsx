@@ -700,32 +700,4 @@ export const WhatsAppInterface: React.FC = () => {
   );
 };
 
-// Group messages by date, ensuring chronological order
-const groupMessagesByDate = (messages: any[]) => {
-    // First sort all messages by timestamp
-    const sortedMessages = [...messages].sort((a, b) => {
-      // Handle invalid timestamps by using current time as fallback
-      const timestampA = isNaN(a.timestamp) ? Date.now() / 1000 : a.timestamp;
-      const timestampB = isNaN(b.timestamp) ? Date.now() / 1000 : b.timestamp;
-      return timestampA - timestampB; // Ascending order (oldest first)
-    });
-
-    const groups: { [key: string]: any[] } = {};
-
-    sortedMessages.forEach(message => {
-      const date = formatMessageDate(message.timestamp);
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(message);
-    });
-
-    // Sort the dates chronologically too
-    return Object.entries(groups).sort((a, b) => {
-      const dateA = new Date(a[0] === 'Today' ? Date.now() : 
-                            a[0] === 'Yesterday' ? Date.now() - 86400000 : a[0]);
-      const dateB = new Date(b[0] === 'Today' ? Date.now() : 
-                            b[0] === 'Yesterday' ? Date.now() - 86400000 : b[0]);
-      return dateA.getTime() - dateB.getTime();
-    });
-  };
+// Group messages by date, ensuring chronological order is handled by the imported function
